@@ -130,3 +130,9 @@ The `CustomUserDetails` class had repeated role string literals such as `ROLE_US
 That duplication was cleaned up by extracting the role names into constants in [src/main/java/br/com/AllTallent/config/CustomUserDetails.java](src/main/java/br/com/AllTallent/config/CustomUserDetails.java).
 
 This is a maintainability fix rather than a security fix, but it helps reduce Sonar code smell noise before test work starts.
+
+### Priority 4: Externalize CORS origins
+
+The CORS configuration used to hardcode the frontend origin `http://localhost:5173` inside [src/main/java/br/com/AllTallent/config/SecurityConfig.java](src/main/java/br/com/AllTallent/config/SecurityConfig.java).
+
+That value is now read from `app.cors.allowed-origins`, with a default fallback to the local development origin. This keeps the environment-specific URL out of the code and makes the backend easier to move between local and CI environments.

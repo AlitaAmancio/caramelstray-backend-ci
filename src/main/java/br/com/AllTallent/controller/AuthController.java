@@ -62,7 +62,7 @@ public class AuthController {
             return ResponseEntity.created(location).body("Colaborador cadastrado com sucesso!");
 
         } catch (RuntimeException e) {
-            throw new HttpServerErrorException(500, "Error while registering funcionario", e);
+            return ResponseEntity.badRequest().body("Registration failed");
         }
     }
 
