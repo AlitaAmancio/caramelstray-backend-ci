@@ -113,3 +113,20 @@ The most important issues are the values stored directly in configuration:
 * [docker-compose.yml](docker-compose.yml#L1-L14) now reads the PostgreSQL username and password from environment variables as well.
 
 These values should stay externalized in environment variables or CI secrets, because they are the strongest security concern and usually sit at the top of Sonar's priority list.
+
+### Priority 2: Reduce sensitive error exposure
+
+The authentication and registration paths should avoid exposing internal exception messages to clients.
+
+* [src/main/java/br/com/AllTallent/config/JwtAuthFilter.java](src/main/java/br/com/AllTallent/config/JwtAuthFilter.java#L69-L80) should return generic responses while logging the detailed error server-side.
+* [src/main/java/br/com/AllTallent/controller/AuthController.java](src/main/java/br/com/AllTallent/controller/AuthController.java#L50-L76) should not return `e.getMessage()` from the registration endpoint.
+
+This keeps implementation details out of the API response and reduces the chance of leaking internal behavior.
+
+### Priority 3: Remove duplicated role literals
+
+The `CustomUserDetails` class had repeated role string literals such as `ROLE_USER`, `ROLE_GESTOR`, and `ROLE_ADMIN`.
+
+That duplication was cleaned up by extracting the role names into constants in [src/main/java/br/com/AllTallent/config/CustomUserDetails.java](src/main/java/br/com/AllTallent/config/CustomUserDetails.java).
+
+This is a maintainability fix rather than a security fix, but it helps reduce Sonar code smell noise before test work starts.
