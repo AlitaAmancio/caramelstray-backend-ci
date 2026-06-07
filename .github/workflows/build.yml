@@ -11,6 +11,10 @@ jobs:
   build:
     name: Build, Test and Analyze
     runs-on: ubuntu-latest
+    env:
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
 
     steps:
       - name: Start CI log

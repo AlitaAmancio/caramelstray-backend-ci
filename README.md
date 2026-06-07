@@ -89,4 +89,27 @@ This workflow is coherent with the rest of the repository:
 
 * `pom.xml` targets Java 17 and uses Spring Boot 3.5.5
 * `application.properties` connects to `jdbc:postgresql://localhost:5432/alltallent`
-* `docker-compose.yml` exposes PostgreSQL on port `5432` with the same database name and credentials
+* `docker-compose.yml` exposes PostgreSQL on port `5432` and now reads its credentials from environment variables
+
+### Required configuration
+
+The application no longer stores its database credentials or JWT secret in source-controlled configuration. Instead, the following values must be provided at runtime:
+
+* `DB_USERNAME`
+* `DB_PASSWORD`
+* `JWT_SECRET_KEY`
+
+In GitHub Actions, these values are read from repository secrets. Locally, they must be set in the shell or through a non-committed `.env` file before starting the app or running the database container.
+
+## Sonar Remediation Strategy
+
+Before starting the test implementation phase, the repository should first clear the highest-priority Sonar findings. That reduces the chance of tests breaking immediately after structural fixes and avoids rework.
+
+### Priority 1: Remove hardcoded secrets and credentials
+
+The most important issues are the values stored directly in configuration:
+
+* [src/main/resources/application.properties](src/main/resources/application.properties#L4-L12) now reads the database username, database password, and JWT secret key from environment variables instead of storing them in plain text.
+* [docker-compose.yml](docker-compose.yml#L1-L14) now reads the PostgreSQL username and password from environment variables as well.
+
+These values should stay externalized in environment variables or CI secrets, because they are the strongest security concern and usually sit at the top of Sonar's priority list.

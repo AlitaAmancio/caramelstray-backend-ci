@@ -1,26 +1,43 @@
 package br.com.AllTallent.service;
 
-import java.util.stream.Collectors;
-import java.util.List;
-import br.com.AllTallent.dto.*;
-import br.com.AllTallent.exception.ResourceNotFoundException;
-import br.com.AllTallent.exception.UnauthorizedActionException;
-import br.com.AllTallent.model.*;
-import br.com.AllTallent.repository.*;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.hibernate.Hibernate;
-
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.Objects;
 
+import org.hibernate.Hibernate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import br.com.AllTallent.config.CustomUserDetails;
+import br.com.AllTallent.dto.AvaliacaoDetalhadaDTO;
+import br.com.AllTallent.dto.AvaliacaoFuncionarioResponseDTO;
+import br.com.AllTallent.dto.AvaliacaoParaResponderDTO;
+import br.com.AllTallent.dto.AvaliacaoRequestDTO;
+import br.com.AllTallent.dto.AvaliacaoResponseDTO;
+import br.com.AllTallent.dto.AvaliacaoRevisaoDTO;
+import br.com.AllTallent.dto.RespostaColaboradorRequestDTO;
+import br.com.AllTallent.dto.RespostaColaboradorResponseDTO;
+import br.com.AllTallent.dto.RevisaoDetalhadaDTO;
+import br.com.AllTallent.dto.RevisaoSupervisorRequestDTO;
+import br.com.AllTallent.exception.ResourceNotFoundException;
+import br.com.AllTallent.exception.UnauthorizedActionException;
+import br.com.AllTallent.model.Avaliacao;
+import br.com.AllTallent.model.AvaliacaoFuncionario;
+import br.com.AllTallent.model.Funcionario;
+import br.com.AllTallent.model.Pergunta;
+import br.com.AllTallent.model.PerguntaOpcao;
+import br.com.AllTallent.model.RespostaColaborador;
+import br.com.AllTallent.repository.AvaliacaoFuncionarioRepository;
+import br.com.AllTallent.repository.AvaliacaoRepository;
+import br.com.AllTallent.repository.FuncionarioRepository;
+import br.com.AllTallent.repository.PerguntaOpcaoRepository;
+import br.com.AllTallent.repository.PerguntaRepository;
+import br.com.AllTallent.repository.RespostaColaboradorRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class AvaliacaoService {
@@ -365,7 +382,7 @@ public class AvaliacaoService {
                 .respostaDada(resp.getRespostaTexto())
                 .opcaoSelecionadaId(idOpcao) // Usa a variável que calculamos acima
                 .build();
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
 
