@@ -53,7 +53,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody CadastroRequestDTO request) {
+    public ResponseEntity<String> register(@Valid @RequestBody CadastroRequestDTO request) {
         try {
             Funcionario funcionarioSalvo = authService.register(request);
 

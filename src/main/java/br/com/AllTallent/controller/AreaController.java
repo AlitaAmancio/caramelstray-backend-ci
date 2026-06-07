@@ -1,5 +1,6 @@
 package br.com.AllTallent.controller;
 
+import br.com.AllTallent.dto.AreaDTO;
 import br.com.AllTallent.model.Area;
 import br.com.AllTallent.repository.AreaRepository;
 import org.springframework.http.HttpStatus;
@@ -21,14 +22,16 @@ public class AreaController {
 
     
     @PostMapping
-    public ResponseEntity<Area> createArea(@RequestBody Area area) {
-        Area novaArea = areaRepository.save(area);
-        return new ResponseEntity<>(novaArea, HttpStatus.CREATED);
+    public ResponseEntity<AreaDTO> createArea(@RequestBody AreaDTO areaDTO) {
+        Area novaArea = areaRepository.save(areaDTO.toEntity());
+        return new ResponseEntity<>(new AreaDTO(novaArea), HttpStatus.CREATED);
     }
 
     
     @GetMapping
-    public List<Area> getAllAreas() {
-        return areaRepository.findAll();
+    public List<AreaDTO> getAllAreas() {
+        return areaRepository.findAll().stream()
+                .map(AreaDTO::new)
+                .toList();
     }
 }

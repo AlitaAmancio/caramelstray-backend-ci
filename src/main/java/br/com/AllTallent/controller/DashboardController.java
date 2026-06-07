@@ -6,6 +6,7 @@ import br.com.AllTallent.model.Funcionario;
 import br.com.AllTallent.repository.FuncionarioRepository;
 import br.com.AllTallent.service.DashboardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
+@Slf4j
 public class DashboardController {
 
     private final DashboardService dashboardService;
@@ -29,11 +31,11 @@ public class DashboardController {
      */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> getDashboardData(
+    public ResponseEntity<Object> getDashboardData(
             @RequestParam(required = false) Integer codigoArea,
             Authentication authentication) {
 
-        System.out.println(">>> 1. ENDPOINT ACIONADO - INICIANDO...");
+        log.info("Dashboard endpoint invoked");
 
         try {
             // --- LÓGICA DE PERMISSÃO ---
@@ -55,22 +57,20 @@ public class DashboardController {
                 
                 if (gestor.getArea() != null) {
                     filtroAreaId = gestor.getArea().getCodigo();
-                    System.out.println(">>> 2. FILTRO APLICADO (GESTOR): Área ID " + filtroAreaId);
+                    log.info("Dashboard area filter applied for gestor: {}", filtroAreaId);
                 }
             }
 
             // --- CHAMADA AO SERVICE ---
-            System.out.println(">>> TENTANDO CHAMAR O SERVICE...");
             DashboardResponseDTO data = dashboardService.getDashboardData(filtroAreaId);
             
-            System.out.println(">>> 3. SUCESSO! DADOS RECEBIDOS DO SERVICE: " + data);
+            log.info("Dashboard data retrieved successfully");
 
             return ResponseEntity.ok(data);
 
         } catch (Exception e) {
             // --- CAPTURA DO ERRO ---
-            System.out.println(">>>  ERRO CAPTURADO NO CONTROLLER ");
-            e.printStackTrace(); // Imprime o erro no terminal para debug
+            log.error("Error while building dashboard response", e);
             return ResponseEntity.internalServerError().body("Erro interno no servidor: " + e.getMessage());
         }
     }

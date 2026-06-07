@@ -2,7 +2,6 @@ package br.com.AllTallent.controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,34 +31,38 @@ public class CompetenciaController {
      @GetMapping
     public ResponseEntity<List<CompetenciaDTO>> listar() {
         List<CompetenciaDTO> dtos = competenciaRepository.findAll().stream()
-                .map(CompetenciaDTO::new) 
-                .collect(Collectors.toList());
+                .map(CompetenciaDTO::new)
+                .toList();
         return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Competencia> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<CompetenciaDTO> buscarPorId(@PathVariable Integer id) {
         return competenciaRepository.findById(id)
-                .map(ResponseEntity::ok)
+                .map(competencia -> ResponseEntity.ok(new CompetenciaDTO(competencia)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Competencia> criar(@RequestBody Competencia nova) {
-        if (competenciaRepository.existsByNomeIgnoreCase(nova.getNome())) {
+    public ResponseEntity<CompetenciaDTO> criar(@RequestBody CompetenciaDTO nova) {
+        if (competenciaRepository.existsByNomeIgnoreCase(nova.nome())) {
             return ResponseEntity.badRequest().build();
         }
-        Competencia salva = competenciaRepository.save(nova);
-        return ResponseEntity.created(URI.create("/api/competencia/" + salva.getCodigo())).body(salva);
+        Competencia entidade = new Competencia();
+        entidade.setNome(nova.nome());
+        entidade.setCategoria(nova.categoria());
+        Competencia salva = competenciaRepository.save(entidade);
+        return ResponseEntity.created(URI.create("/api/competencia/" + salva.getCodigo())).body(new CompetenciaDTO(salva));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Competencia> atualizar(@PathVariable Integer id, @RequestBody Competencia atualizada) {
+    public ResponseEntity<CompetenciaDTO> atualizar(@PathVariable Integer id, @RequestBody CompetenciaDTO atualizada) {
         return competenciaRepository.findById(id)
                 .map(c -> {
-                    c.setNome(atualizada.getNome());
+                    c.setNome(atualizada.nome());
+                    c.setCategoria(atualizada.categoria());
                     Competencia salva = competenciaRepository.save(c);
-                    return ResponseEntity.ok(salva);
+                    return ResponseEntity.ok(new CompetenciaDTO(salva));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

@@ -1,5 +1,7 @@
 package br.com.AllTallent.controller;
 
+import br.com.AllTallent.dto.PerfilDTO;
+import br.com.AllTallent.model.Perfil;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -25,14 +27,16 @@ public class PerfilController {
 
     
     @PostMapping
-    public ResponseEntity<Perfil> createPerfil(@RequestBody Perfil perfil) {
-        Perfil novoPerfil = perfilRepository.save(perfil);
-        return new ResponseEntity<>(novoPerfil, HttpStatus.CREATED);
+    public ResponseEntity<PerfilDTO> createPerfil(@RequestBody PerfilDTO perfilDTO) {
+        Perfil novoPerfil = perfilRepository.save(perfilDTO.toEntity());
+        return new ResponseEntity<>(new PerfilDTO(novoPerfil), HttpStatus.CREATED);
     }
 
     
     @GetMapping
-    public List<Perfil> getAllPerfis() {
-        return perfilRepository.findAll();
+    public List<PerfilDTO> getAllPerfis() {
+        return perfilRepository.findAll().stream()
+                .map(PerfilDTO::new)
+                .toList();
     }
 }

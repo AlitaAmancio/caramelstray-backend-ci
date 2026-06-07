@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime; // Importante para a data de cadastro
+import java.time.ZoneOffset;
 
 @Service
 @RequiredArgsConstructor
@@ -28,15 +29,15 @@ public class AuthService {
         
         // 1. Validar se o email já existe
         if (funcionarioRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Erro: Email já está em uso!");
+            throw new IllegalStateException("Erro: Email já está em uso!");
         }
 
         // 2. Buscar relacionamentos obrigatórios
         Area area = areaRepository.findById(request.getCodigoArea())
-                .orElseThrow(() -> new RuntimeException("Erro: Área (Departamento) não encontrada."));
+                .orElseThrow(() -> new IllegalArgumentException("Erro: Área (Departamento) não encontrada."));
 
         Perfil perfil = perfilRepository.findById(request.getCodigoPerfil())
-                .orElseThrow(() -> new RuntimeException("Erro: Perfil (Cargo) não encontrado."));
+                .orElseThrow(() -> new IllegalArgumentException("Erro: Perfil (Cargo) não encontrado."));
 
         // 3. Criptografia
         String senhaCriptografada = passwordEncoder.encode(request.getSenha());
@@ -59,12 +60,12 @@ public class AuthService {
         novoFuncionario.setDataAdmissao(request.getDataAdmissao());
         
         // --- DATA DE CADASTRO AUTOMÁTICA ---
-        novoFuncionario.setDataCadastro(OffsetDateTime.now()); 
+        novoFuncionario.setDataCadastro(OffsetDateTime.now(ZoneOffset.UTC)); 
 
         // Lógica do Gestor (Opcional)
         if (request.getCodigoGestor() != null) {
             Funcionario gestor = funcionarioRepository.findById(request.getCodigoGestor())
-                .orElseThrow(() -> new RuntimeException("Erro: Gestor informado não encontrado."));
+                .orElseThrow(() -> new IllegalArgumentException("Erro: Gestor informado não encontrado."));
             novoFuncionario.setGestor(gestor);
         }
         

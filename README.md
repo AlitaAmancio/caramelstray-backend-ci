@@ -131,6 +131,14 @@ That duplication was cleaned up by extracting the role names into constants in [
 
 This is a maintainability fix rather than a security fix, but it helps reduce Sonar code smell noise before test work starts.
 
+## Remediation Progress
+
+* `AreaController`, `PerfilController`, and `CompetenciaController` now use DTOs instead of exposing persistent entities directly.
+* `AuthController` and `AvaliacaoController` no longer use wildcard response types in the cleaned methods.
+* `DashboardController` now uses a logger instead of `System.out`.
+* `AuthService` now uses specific exception types and an explicit UTC timestamp.
+* `FuncionarioService` now reuses a constant for the repeated "Funcionário não encontrado com o ID" message.
+
 ### Priority 4: Externalize CORS origins
 
 The CORS configuration used to hardcode the frontend origin `http://localhost:5173` inside [src/main/java/br/com/AllTallent/config/SecurityConfig.java](src/main/java/br/com/AllTallent/config/SecurityConfig.java).
