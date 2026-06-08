@@ -1,6 +1,7 @@
 package br.com.AllTallent.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,8 +23,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Set;
 
 
@@ -78,7 +79,7 @@ public class Avaliacao {
     // --- Métodos ---
     @PrePersist
     protected void onCreate() {
-        this.dataCriacao = LocalDate.now();
+        this.dataCriacao = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
         if (this.status == null || this.status.trim().isEmpty()) {
             this.status = "Rascunho";
         }

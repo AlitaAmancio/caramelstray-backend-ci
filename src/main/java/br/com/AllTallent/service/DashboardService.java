@@ -8,6 +8,7 @@ import br.com.AllTallent.dto.AreaQuantidadeDTO;
 import br.com.AllTallent.dto.CompetenciaQuantidadeDTO;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,26 +21,22 @@ import br.com.AllTallent.repository.AvaliacaoRepository;
 import br.com.AllTallent.repository.FuncionarioRepository;
 import br.com.AllTallent.repository.RespostaColaboradorRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; 
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class DashboardService {
     
-    @Autowired
     private FuncionarioRepository funcionarioRepo;
-
-    @Autowired
     private AvaliacaoRepository avaliacaoRepo;
-
-    @Autowired
     private AvaliacaoFuncionarioRepository avaliacaoFuncionarioRepo;
-
-    @Autowired
     private RespostaColaboradorRepository respostaColaboradorRepo;
 
     // --- MÉTODOS AUXILIARES NOVOS (Vieram do Git) ---
@@ -61,7 +58,7 @@ public class DashboardService {
     public DashboardResponseDTO getDashboardData(Integer codigoAreaFiltro) {
 
         // --- Cálculos de Data ---
-        LocalDate hoje = LocalDate.now();
+        LocalDate hoje = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
         LocalDate inicioMes = hoje.withDayOfMonth(1);
         LocalDate fimMes = hoje.withDayOfMonth(hoje.lengthOfMonth());
 
