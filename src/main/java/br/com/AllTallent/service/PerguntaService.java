@@ -77,7 +77,7 @@ public class PerguntaService {
     public List<PerguntaResponseDTO> listarTodas() {
         return perguntaRepository.findAll().stream()
                 .map(PerguntaResponseDTO::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
      

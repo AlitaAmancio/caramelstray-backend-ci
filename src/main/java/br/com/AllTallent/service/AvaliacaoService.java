@@ -156,7 +156,7 @@ public class AvaliacaoService {
                 .filter(aval -> aval.getCriador().getArea() != null &&
                                 Objects.equals(aval.getCriador().getArea().getCodigo(), usuarioLogado.getAreaId()))
                 .map(AvaliacaoResponseDTO::new)
-                .collect(Collectors.toList());
+                .toList();
         }
 
         // Regra do Perfil 2 (Supervisor)
@@ -170,7 +170,7 @@ public class AvaliacaoService {
                 // 3. Filtra para ver APENAS as que ele mesmo criou
                 .filter(aval -> Objects.equals(aval.getCriador().getCodigo(), usuarioLogado.getCodigo()))
                 .map(AvaliacaoResponseDTO::new)
-                .collect(Collectors.toList());
+                .toList();
         }
 
         // Se não for nenhum dos dois (ex: USER), retorna lista vazia
@@ -206,7 +206,7 @@ public class AvaliacaoService {
 
         return avaliacaoFuncionarioRepository.findByAvaliacaoCodigo(avaliacaoId).stream()
                .map(AvaliacaoFuncionarioResponseDTO::new)
-               .collect(Collectors.toList());
+               .toList();
     }
 
     // --- MÉTODO ATUALIZADO ---
@@ -221,7 +221,7 @@ public class AvaliacaoService {
 
         return respostaColaboradorRepository.findByAvaliacaoFuncionarioCodigo(instanciaId).stream()
                .map(RespostaColaboradorResponseDTO::new)
-               .collect(Collectors.toList());
+               .toList();
     }
 
 
@@ -242,12 +242,10 @@ public class AvaliacaoService {
         }
 
         // Se for Supervisor (GESTOR), verifica se ele é o criador
-        if (usuarioLogado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GESTOR")) &&
-            !usuarioLogado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-
-            if (!Objects.equals(criadorAvaliacaoId, usuarioLogadoId)) {
-                throw new UnauthorizedActionException("Permissão negada. Supervisores só podem ver avaliações que eles mesmos criaram.");
-            }
+        if (usuarioLogado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_GESTOR)) &&
+            usuarioLogado.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals(ROLE_ADMIN)) &&
+            !Objects.equals(criadorAvaliacaoId, usuarioLogadoId)) {
+             throw new UnauthorizedActionException("Permissão negada. Supervisores só podem acessar avaliações que eles mesmos criaram.");
         }
 
         // Se for Admin da mesma área, passa.
@@ -263,7 +261,7 @@ public class AvaliacaoService {
     public RespostaColaboradorResponseDTO salvarOuAtualizarResposta(RespostaColaboradorRequestDTO dto) {
         CustomUserDetails usuarioLogado = getUsuarioLogado();
         AvaliacaoFuncionario avaliacaoFunc = avaliacaoFuncionarioRepository.findById(dto.funcionarioAvaliacaoCodigo())
-                .orElseThrow(() -> new EntityNotFoundException("Instância de avaliação não encontrada: " + dto.funcionarioAvaliacaoCodigo()));
+                .orElseThrow(() -> new EntityNotFoundException(MSG_AVALIACAO_NAO_ENCONTRADA_ID + dto.funcionarioAvaliacaoCodigo()));
         if (!avaliacaoFunc.getFuncionario().getCodigo().equals(usuarioLogado.getCodigo())) {
             throw new UnauthorizedActionException("Permissão negada. Você só pode salvar respostas para suas próprias avaliações.");
         }
@@ -342,7 +340,7 @@ public class AvaliacaoService {
         return avaliacaoFuncionarioRepository.findByFuncionarioCodigo(funcionarioId).stream()
                .filter(af -> "PENDENTE".equals(af.getResultadoStatus()))
                .map(AvaliacaoFuncionarioResponseDTO::new)
-               .collect(Collectors.toList());
+               .toList();
     }
 
      @Transactional(readOnly = true)

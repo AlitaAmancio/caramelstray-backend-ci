@@ -2,12 +2,10 @@ package br.com.AllTallent.dto;
 
 import br.com.AllTallent.model.Avaliacao;
 import br.com.AllTallent.model.AvaliacaoFuncionario;
-//import br.com.AllTallent.model.Funcionario;
 import br.com.AllTallent.model.RespostaColaborador; 
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record AvaliacaoRevisaoDTO(
     Long avaliacaoFuncionarioCodigo,
@@ -24,11 +22,21 @@ public record AvaliacaoRevisaoDTO(
             avaliacaoBase.getTitulo(),
             instancia.getComentarioColaborador(),
             instancia.getResultadoStatus(),
-            (avaliacaoBase.getPerguntas() != null) ?
-                avaliacaoBase.getPerguntas().stream()
-                    .map(pergunta -> new PerguntaComRespostaDTO(pergunta, (instancia.getRespostas() != null ? List.copyOf(instancia.getRespostas()) : Collections.<RespostaColaborador>emptyList()) ))
-                    .collect(Collectors.toList())
-                : Collections.emptyList()
+            mapearPerguntas(instancia, avaliacaoBase)
         );
+    }
+
+    private static List<PerguntaComRespostaDTO> mapearPerguntas(AvaliacaoFuncionario instancia, Avaliacao avaliacaoBase) {
+        if (avaliacaoBase.getPerguntas() == null) {
+            return Collections.emptyList();
+        }
+
+        List<RespostaColaborador> respostas = (instancia.getRespostas() != null) 
+                ? List.copyOf(instancia.getRespostas()) 
+                : Collections.emptyList();
+
+        return avaliacaoBase.getPerguntas().stream()
+                .map(pergunta -> new PerguntaComRespostaDTO(pergunta, respostas))
+                .toList();
     }
 }
