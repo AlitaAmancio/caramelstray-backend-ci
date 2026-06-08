@@ -89,7 +89,7 @@ public class AvaliacaoService {
         int perfilAlvoId = avaliado.getPerfil().getCodigo();
 
         if (avaliador.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_GESTOR)) &&
-            !avaliador.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_ADMIN))) {
+            avaliador.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals(ROLE_ADMIN))) {
             boolean alvoEhColaborador = (perfilAlvoId == 3);
             return mesmoSetor && alvoEhColaborador;
         }
@@ -290,7 +290,7 @@ public class AvaliacaoService {
     public AvaliacaoFuncionarioResponseDTO salvarRevisaoSupervisor(Long instanciaId, RevisaoSupervisorRequestDTO dto) {
         CustomUserDetails avaliadorLogado = getUsuarioLogado();
         AvaliacaoFuncionario instancia = avaliacaoFuncionarioRepository.findById(instanciaId)
-                .orElseThrow(() -> new EntityNotFoundException("Instância de avaliação não encontrada: " + instanciaId));
+                .orElseThrow(() -> new EntityNotFoundException(MSG_AVALIACAO_NAO_ENCONTRADA_ID + instanciaId));
         if (!podeAvaliar(avaliadorLogado, instancia.getFuncionario())) {
              throw new UnauthorizedActionException("Permissão negada. Você não pode revisar esta avaliação.");
         }
