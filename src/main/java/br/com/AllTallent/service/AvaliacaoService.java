@@ -42,6 +42,11 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class AvaliacaoService {
 
+    private static final String MSG_AVALIACAO_NAO_ENCONTRADA_ID = "Instância de avaliação não encontrada: ";
+    private static final String ROLE_GESTOR = "ROLE_GESTOR";
+    private static final String ROLE_ADMIN = "ROLE_ADMIN";
+
+
     private final AvaliacaoRepository avaliacaoRepository;
     private final FuncionarioRepository funcionarioRepository;
     private final PerguntaRepository perguntaRepository;
@@ -83,12 +88,12 @@ public class AvaliacaoService {
         boolean mesmoSetor = avaliador.getAreaId().equals(avaliado.getArea().getCodigo());
         int perfilAlvoId = avaliado.getPerfil().getCodigo();
 
-        if (avaliador.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GESTOR")) &&
-            !avaliador.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+        if (avaliador.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_GESTOR)) &&
+            !avaliador.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_ADMIN))) {
             boolean alvoEhColaborador = (perfilAlvoId == 3);
             return mesmoSetor && alvoEhColaborador;
         }
-        if (avaliador.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+        if (avaliador.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_ADMIN))) {
             boolean alvoEhTime = (perfilAlvoId == 2 || perfilAlvoId == 3);
             return mesmoSetor && alvoEhTime;
         }
@@ -143,7 +148,7 @@ public class AvaliacaoService {
         List<Avaliacao> todasAvaliacoes = avaliacaoRepository.findAll();
 
         // Regra do Perfil 1 (Diretor)
-        if (usuarioLogado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+        if (usuarioLogado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_ADMIN))) {
             return todasAvaliacoes.stream()
                 // 1. Filtra avaliações sem criador (antigas)
                 .filter(aval -> aval.getCriador() != null)
@@ -155,7 +160,7 @@ public class AvaliacaoService {
         }
 
         // Regra do Perfil 2 (Supervisor)
-        if (usuarioLogado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GESTOR"))) {
+        if (usuarioLogado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_GESTOR))) {
              return todasAvaliacoes.stream()
                 // 1. Filtra avaliações sem criador (antigas)
                 .filter(aval -> aval.getCriador() != null)
@@ -177,7 +182,7 @@ public class AvaliacaoService {
     public AvaliacaoDetalhadaDTO buscarAvaliacaoDetalhada(Integer id) {
         CustomUserDetails usuarioLogado = getUsuarioLogado();
         Avaliacao avaliacao = avaliacaoRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException(MSG_AVALIACAO_NAO_ENCONTRADA_ID + id));
 
         // Validação de Segurança
         validarPermissaoDeAcesso(usuarioLogado, avaliacao);
@@ -194,7 +199,7 @@ public class AvaliacaoService {
     public List<AvaliacaoFuncionarioResponseDTO> buscarInstanciasPorAvaliacao(Integer avaliacaoId) {
         CustomUserDetails usuarioLogado = getUsuarioLogado();
         Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
-             .orElseThrow(() -> new EntityNotFoundException("Avaliação base não encontrada: " + avaliacaoId));
+             .orElseThrow(() -> new EntityNotFoundException(MSG_AVALIACAO_NAO_ENCONTRADA_ID + avaliacaoId));
 
         // Validação de Segurança
         validarPermissaoDeAcesso(usuarioLogado, avaliacao);
@@ -209,7 +214,7 @@ public class AvaliacaoService {
     public List<RespostaColaboradorResponseDTO> buscarRespostasPorInstancia(Long instanciaId) {
         CustomUserDetails usuarioLogado = getUsuarioLogado();
         AvaliacaoFuncionario instancia = avaliacaoFuncionarioRepository.findById(instanciaId)
-            .orElseThrow(() -> new EntityNotFoundException("Instância de avaliação não encontrada: " + instanciaId));
+            .orElseThrow(() -> new EntityNotFoundException(MSG_AVALIACAO_NAO_ENCONTRADA_ID + instanciaId));
 
         // Validação de Segurança (Pode ver as respostas se puder ver a avaliação mestre)
         validarPermissaoDeAcesso(usuarioLogado, instancia.getAvaliacao());
