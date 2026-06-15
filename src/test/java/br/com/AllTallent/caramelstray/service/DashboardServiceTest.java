@@ -1,4 +1,4 @@
-package br.com.AllTallent.service;
+package br.com.AllTallent.caramelstray.service;
 
 import java.util.List;
 import java.util.Map;
@@ -11,11 +11,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 
@@ -33,6 +33,7 @@ import br.com.AllTallent.repository.AvaliacaoFuncionarioRepository;
 import br.com.AllTallent.repository.AvaliacaoRepository;
 import br.com.AllTallent.repository.FuncionarioRepository;
 import br.com.AllTallent.repository.RespostaColaboradorRepository;
+import br.com.AllTallent.service.DashboardService;
 
 @ExtendWith(MockitoExtension.class)
 class DashboardServiceTest {
@@ -136,16 +137,16 @@ class DashboardServiceTest {
         Funcionario bob = new Funcionario(); bob.setNomeCompleto("Bob");
 
         // instAlice: PENDING + no answers → appears in both pending and missingDelivery
-        AvaliacaoFuncionario instAlice = mock(AvaliacaoFuncionario.class, withSettings().lenient());
-        when(instAlice.getResultadoStatus()).thenReturn("PENDENTE");
-        when(instAlice.getFuncionario()).thenReturn(alice);
-        when(instAlice.getCodigo()).thenReturn(1L);
+        AvaliacaoFuncionario instAlice = mock(AvaliacaoFuncionario.class);
+        lenient().when(instAlice.getResultadoStatus()).thenReturn("PENDENTE");
+        lenient().when(instAlice.getFuncionario()).thenReturn(alice);
+        lenient().when(instAlice.getCodigo()).thenReturn(1L);
 
         // instBob: COMPLETED + has answer → appears in neither list
-        AvaliacaoFuncionario instBob = mock(AvaliacaoFuncionario.class, withSettings().lenient());
-        when(instBob.getResultadoStatus()).thenReturn("CONCLUIDO");
-        when(instBob.getFuncionario()).thenReturn(bob);
-        when(instBob.getCodigo()).thenReturn(2L);
+        AvaliacaoFuncionario instBob = mock(AvaliacaoFuncionario.class);
+        lenient().when(instBob.getResultadoStatus()).thenReturn("CONCLUIDO");
+        lenient().when(instBob.getFuncionario()).thenReturn(bob);
+        lenient().when(instBob.getCodigo()).thenReturn(2L);
 
         when(employeeRepo.findAll()).thenReturn(List.of(alice, bob));
         when(evaluationRepo.findAll()).thenReturn(List.of(concluded, pending, other));

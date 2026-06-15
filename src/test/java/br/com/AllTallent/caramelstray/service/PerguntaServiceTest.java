@@ -1,8 +1,9 @@
-package br.com.AllTallent.service;
+package br.com.AllTallent.caramelstray.service;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,6 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import org.mockito.InjectMocks;
@@ -24,6 +28,7 @@ import br.com.AllTallent.model.Competencia;
 import br.com.AllTallent.model.Pergunta;
 import br.com.AllTallent.repository.CompetenciaRepository;
 import br.com.AllTallent.repository.PerguntaRepository;
+import br.com.AllTallent.service.PerguntaService;
 import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,36 +65,25 @@ class PerguntaServiceTest {
     @Test
     void createQuestionShouldThrowWhenSkillNotFound() {
         when(skillRepository.findById(1)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class,
-                () -> questionService.criarPergunta(dto(null, null)));
+        var request = dto(null, null);
+        assertThrows(EntityNotFoundException.class, () -> questionService.criarPergunta(request));
     }
 
-    @Test
-    void createQuestionShouldSaveWhenTipoPerguntaIsNull() {
-        // null tipo → tipo="" → isMultipla=false → else branch (covers null branch of ternary)
-        stubSkillFound(); stubSave();
-        assertNotNull(questionService.criarPergunta(dto(null, null)));
+    // null tipo, non-multipla tipo, multipla+null opcoes (accented), multipla+empty opcoes → all hit the else branch
+    static Stream<Arguments> createQuestionElseBranchInputs() {
+        return Stream.of(
+                Arguments.of(null, null),
+                Arguments.of("ABERTA", null),
+                Arguments.of("MÚLTIPLA ESCOLHA", null),
+                Arguments.of("multipla escolha", List.of())
+        );
     }
 
-    @Test
-    void createQuestionShouldSaveWhenTypeIsNotMultipla() {
-        // non-null tipo, not multipla → isMultipla=false (covers non-null ternary branch AND both OR=false)
+    @ParameterizedTest
+    @MethodSource("createQuestionElseBranchInputs")
+    void createQuestionShouldSaveForElseBranchInputs(String tipo, List<OpcaoRequest> opcoes) {
         stubSkillFound(); stubSave();
-        assertNotNull(questionService.criarPergunta(dto("ABERTA", null)));
-    }
-
-    @Test
-    void createQuestionShouldEnterElseWhenAccentedMultiplaHasNullOpcoes() {
-        // tipo contains "múltipla" → OR first=true (short-circuit); opcoes=null → compound AND=false → else
-        stubSkillFound(); stubSave();
-        assertNotNull(questionService.criarPergunta(dto("MÚLTIPLA ESCOLHA", null)));
-    }
-
-    @Test
-    void createQuestionShouldEnterElseWhenUnaccentedMultiplaHasEmptyOpcoes() {
-        // tipo contains "multipla" (second OR branch); opcoes=[] → !isEmpty=false → else
-        stubSkillFound(); stubSave();
-        assertNotNull(questionService.criarPergunta(dto("multipla escolha", List.of())));
+        assertNotNull(questionService.criarPergunta(dto(tipo, opcoes)));
     }
 
     @Test

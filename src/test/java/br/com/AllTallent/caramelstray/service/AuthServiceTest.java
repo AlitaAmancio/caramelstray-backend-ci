@@ -1,4 +1,23 @@
-package br.com.AllTallent.service;
+package br.com.AllTallent.caramelstray.service;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import br.com.AllTallent.dto.CadastroRequestDTO;
 import br.com.AllTallent.model.Area;
@@ -7,20 +26,7 @@ import br.com.AllTallent.model.Perfil;
 import br.com.AllTallent.repository.AreaRepository;
 import br.com.AllTallent.repository.FuncionarioRepository;
 import br.com.AllTallent.repository.PerfilRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.time.LocalDate;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import br.com.AllTallent.service.AuthService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -87,7 +93,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void shouldRegisterSuccessfully_whenManagerIsNull() {
+    void shouldRegisterSuccessfullyWhenManagerIsNull() {
         request.setCodigoGestor(null);
 
         when(employeeRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
@@ -103,7 +109,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void shouldThrow_whenEmailAlreadyInUse() {
+    void shouldThrowWhenEmailAlreadyInUse() {
         when(employeeRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(new Funcionario()));
 
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> authService.register(request));
@@ -113,7 +119,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void shouldThrow_whenAreaNotFound() {
+    void shouldThrowWhenAreaNotFound() {
         when(employeeRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
         when(areaRepository.findById(request.getCodigoArea())).thenReturn(Optional.empty());
 
@@ -124,7 +130,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void shouldThrow_whenProfileNotFound() {
+    void shouldThrowWhenProfileNotFound() {
         when(employeeRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
         when(areaRepository.findById(request.getCodigoArea())).thenReturn(Optional.of(area));
         when(profileRepository.findById(request.getCodigoPerfil())).thenReturn(Optional.empty());
@@ -136,7 +142,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void shouldThrow_whenManagerNotFound() {
+    void shouldThrowWhenManagerNotFound() {
         when(employeeRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
         when(areaRepository.findById(request.getCodigoArea())).thenReturn(Optional.of(area));
         when(profileRepository.findById(request.getCodigoPerfil())).thenReturn(Optional.of(profile));

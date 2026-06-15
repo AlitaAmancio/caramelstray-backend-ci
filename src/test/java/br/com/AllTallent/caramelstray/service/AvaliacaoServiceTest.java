@@ -1,4 +1,4 @@
-package br.com.AllTallent.service;
+package br.com.AllTallent.caramelstray.service;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,11 +19,11 @@ import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -52,6 +52,7 @@ import br.com.AllTallent.repository.FuncionarioRepository;
 import br.com.AllTallent.repository.PerguntaOpcaoRepository;
 import br.com.AllTallent.repository.PerguntaRepository;
 import br.com.AllTallent.repository.RespostaColaboradorRepository;
+import br.com.AllTallent.service.AvaliacaoService;
 import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,10 +80,10 @@ class AvaliacaoServiceTest {
     private CustomUserDetails user(Integer id, Integer areaId, String... roles) {
         List<GrantedAuthority> authorities = Arrays.stream(roles)
                 .map(r -> (GrantedAuthority) new SimpleGrantedAuthority(r)).toList();
-        CustomUserDetails ud = mock(CustomUserDetails.class, withSettings().lenient());
-        when(ud.getCodigo()).thenReturn(id);
-        when(ud.getAreaId()).thenReturn(areaId);
-        when(ud.getAuthorities()).thenAnswer(inv -> authorities);
+        CustomUserDetails ud = mock(CustomUserDetails.class);
+        lenient().when(ud.getCodigo()).thenReturn(id);
+        lenient().when(ud.getAreaId()).thenReturn(areaId);
+        lenient().when(ud.getAuthorities()).thenAnswer(inv -> authorities);
         return ud;
     }
 
@@ -164,7 +165,7 @@ class AvaliacaoServiceTest {
 
     // createEvaluation + canEvaluate branches
     @Test
-    void createEvaluationShouldSucceed_managerEvaluatingCollaborator() {
+    void createEvaluationShouldSucceedManagerEvaluatingCollaborator() {
         CustomUserDetails manager = user(10, 1, "ROLE_GESTOR");
         login(manager); stubCreateWithSave(manager);
         assertNotNull(evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
@@ -177,8 +178,8 @@ class AvaliacaoServiceTest {
         login(manager);
         when(employeeRepository.getReferenceById(10)).thenReturn(employee(10, area));
         when(questionRepository.findAllById(any())).thenReturn(List.of(question(1L)));
-        assertThrows(EntityNotFoundException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L, 2L))));
+        var request = dto(List.of(99), List.of(1L, 2L));
+        assertThrows(EntityNotFoundException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
     @Test
@@ -188,8 +189,8 @@ class AvaliacaoServiceTest {
         when(employeeRepository.getReferenceById(10)).thenReturn(employee(10, area));
         when(questionRepository.findAllById(any())).thenReturn(List.of(question(1L)));
         when(employeeRepository.findAllById(any())).thenReturn(List.of(targetEmployee));
-        assertThrows(EntityNotFoundException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99, 100), List.of(1L))));
+        var request = dto(List.of(99, 100), List.of(1L));
+        assertThrows(EntityNotFoundException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
     @Test
@@ -200,8 +201,8 @@ class AvaliacaoServiceTest {
         when(employeeRepository.getReferenceById(10)).thenReturn(employee(10, other));
         when(questionRepository.findAllById(any())).thenReturn(List.of(question(1L)));
         when(employeeRepository.findAllById(any())).thenReturn(List.of(targetEmployee));
-        assertThrows(UnauthorizedActionException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+        var request = dto(List.of(99), List.of(1L));
+        assertThrows(UnauthorizedActionException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
     @Test
@@ -210,24 +211,24 @@ class AvaliacaoServiceTest {
         targetEmployee.setPerfil(managerProfile);
         CustomUserDetails manager = user(10, 1, "ROLE_GESTOR");
         login(manager); stubCreate(manager);
-        assertThrows(UnauthorizedActionException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+        var request = dto(List.of(99), List.of(1L));
+        assertThrows(UnauthorizedActionException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
     @Test
     void createEvaluationShouldThrowWhenUserEvaluatesHimself() {
         CustomUserDetails admin = user(99, 1, "ROLE_ADMIN");
         login(admin); stubCreate(admin);
-        assertThrows(UnauthorizedActionException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+        var request = dto(List.of(99), List.of(1L));
+        assertThrows(UnauthorizedActionException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
     @Test
     void createEvaluationShouldThrowWhenUserHasNoRole() {
         CustomUserDetails noRole = user(10, 1);
         login(noRole); stubCreate(noRole);
-        assertThrows(UnauthorizedActionException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+        var request = dto(List.of(99), List.of(1L));
+        assertThrows(UnauthorizedActionException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
     @Test
@@ -235,8 +236,8 @@ class AvaliacaoServiceTest {
         targetEmployee.setPerfil(null);
         CustomUserDetails manager = user(10, 1, "ROLE_GESTOR");
         login(manager); stubCreate(manager);
-        assertThrows(UnauthorizedActionException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+        var request = dto(List.of(99), List.of(1L));
+        assertThrows(UnauthorizedActionException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
     @Test
@@ -244,16 +245,16 @@ class AvaliacaoServiceTest {
         targetEmployee.setArea(null);
         CustomUserDetails manager = user(10, 1, "ROLE_GESTOR");
         login(manager); stubCreate(manager);
-        assertThrows(UnauthorizedActionException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+        var request = dto(List.of(99), List.of(1L));
+        assertThrows(UnauthorizedActionException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
     @Test
     void createEvaluationShouldThrowWhenEvaluatorAreaIdIsNull() {
         CustomUserDetails manager = user(10, null, "ROLE_GESTOR");
         login(manager); stubCreate(manager);
-        assertThrows(UnauthorizedActionException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+        var request = dto(List.of(99), List.of(1L));
+        assertThrows(UnauthorizedActionException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
     @Test
@@ -278,8 +279,8 @@ class AvaliacaoServiceTest {
         targetEmployee.setPerfil(director);
         CustomUserDetails admin = user(10, 1, "ROLE_ADMIN");
         login(admin); stubCreate(admin);
-        assertThrows(UnauthorizedActionException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+        var request = dto(List.of(99), List.of(1L));
+        assertThrows(UnauthorizedActionException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
     // listAllEvaluations
@@ -314,21 +315,21 @@ class AvaliacaoServiceTest {
     }
 
     @Test
-    void listAllEvaluations_managerShouldReturnOwnEvaluations() {
+    void listAllEvaluationsManagerShouldReturnOwnEvaluations() {
         login(user(10, 1, "ROLE_GESTOR")); // creator id=10
         when(evaluationRepository.findAll()).thenReturn(List.of(evaluation));
         assertEquals(1, evaluationService.listarTodasAvaliacoes().size());
     }
 
     @Test
-    void listAllEvaluations_managerShouldHideOtherCreatorEvaluations() {
+    void listAllEvaluationsManagerShouldHideOtherCreatorEvaluations() {
         login(user(55, 1, "ROLE_GESTOR")); // creator is id=10
         when(evaluationRepository.findAll()).thenReturn(List.of(evaluation));
         assertTrue(evaluationService.listarTodasAvaliacoes().isEmpty());
     }
 
     @Test
-    void listAllEvaluations_managerShouldFilterNullCreator() {
+    void listAllEvaluationsManagerShouldFilterNullCreator() {
         login(user(10, 1, "ROLE_GESTOR"));
         Avaliacao noCreator = new Avaliacao(); noCreator.setCriador(null);
         when(evaluationRepository.findAll()).thenReturn(List.of(noCreator));
@@ -336,7 +337,7 @@ class AvaliacaoServiceTest {
     }
 
     @Test
-    void listAllEvaluations_managerShouldFilterNullCreatorArea() {
+    void listAllEvaluationsManagerShouldFilterNullCreatorArea() {
         login(user(10, 1, "ROLE_GESTOR"));
         Avaliacao eval = new Avaliacao(); eval.setCriador(employee(10, null));
         when(evaluationRepository.findAll()).thenReturn(List.of(eval));
@@ -344,7 +345,7 @@ class AvaliacaoServiceTest {
     }
 
     @Test
-    void listAllEvaluationsShouldReturnEmpty_forUserWithoutRole() {
+    void listAllEvaluationsShouldReturnEmptyForUserWithoutRole() {
         login(user(10, 1));
         when(evaluationRepository.findAll()).thenReturn(List.of(evaluation));
         assertTrue(evaluationService.listarTodasAvaliacoes().isEmpty());
@@ -352,7 +353,7 @@ class AvaliacaoServiceTest {
 
     // fetchDetailedEvaluation + validateAccess
     @Test
-    void fetchDetailedEvaluationShouldReturnDTO_forAdminInSameArea() {
+    void fetchDetailedEvaluationShouldReturnDTOForAdminInSameArea() {
         login(user(10, 1, "ROLE_ADMIN"));
         when(evaluationRepository.findById(1)).thenReturn(Optional.of(evaluation));
         assertNotNull(evaluationService.buscarAvaliacaoDetalhada(1));
@@ -464,21 +465,22 @@ class AvaliacaoServiceTest {
     @Test
     void saveOrUpdateAnswerShouldThrowWhenOptionBelongsToWrongQuestion() {
         login(user(99, 1));
-        Pergunta q1 = question(1L); Pergunta q2 = question(2L);
+        Pergunta q1 = question(1L); 
+        Pergunta q2 = question(2L);
         PerguntaOpcao opt = new PerguntaOpcao(); opt.setCodigo(5L); opt.setPergunta(q2);
         when(evaluationInstanceRepository.findById(100L)).thenReturn(Optional.of(evaluationInstance));
         when(questionRepository.findById(1L)).thenReturn(Optional.of(q1));
         when(questionOptionRepository.findById(5L)).thenReturn(Optional.of(opt));
-        assertThrows(IllegalArgumentException.class, () -> evaluationService.salvarOuAtualizarResposta(
-                new RespostaColaboradorRequestDTO(100L, 1L, null, 5L)));
+        var req = new RespostaColaboradorRequestDTO(100L, 1L, null, 5L);
+        assertThrows(IllegalArgumentException.class, () -> evaluationService.salvarOuAtualizarResposta(req));
     }
 
     @Test
     void saveOrUpdateAnswerShouldThrowWhenInstanceNotFound() {
         login(user(99, 1));
         when(evaluationInstanceRepository.findById(999L)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> evaluationService.salvarOuAtualizarResposta(
-                new RespostaColaboradorRequestDTO(999L, 1L, "t", null)));
+        var req = new RespostaColaboradorRequestDTO(999L, 1L, "t", null);
+        assertThrows(EntityNotFoundException.class, () -> evaluationService.salvarOuAtualizarResposta(req));
     }
 
     @Test
@@ -486,8 +488,8 @@ class AvaliacaoServiceTest {
         login(user(99, 1));
         when(evaluationInstanceRepository.findById(100L)).thenReturn(Optional.of(evaluationInstance));
         when(questionRepository.findById(999L)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> evaluationService.salvarOuAtualizarResposta(
-                new RespostaColaboradorRequestDTO(100L, 999L, "t", null)));
+        var req = new RespostaColaboradorRequestDTO(100L, 999L, "t", null);
+        assertThrows(EntityNotFoundException.class, () -> evaluationService.salvarOuAtualizarResposta(req));
     }
 
     @Test
@@ -496,16 +498,16 @@ class AvaliacaoServiceTest {
         when(evaluationInstanceRepository.findById(100L)).thenReturn(Optional.of(evaluationInstance));
         when(questionRepository.findById(1L)).thenReturn(Optional.of(question(1L)));
         when(questionOptionRepository.findById(999L)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> evaluationService.salvarOuAtualizarResposta(
-                new RespostaColaboradorRequestDTO(100L, 1L, null, 999L)));
+        var req = new RespostaColaboradorRequestDTO(100L, 1L, null, 999L);
+        assertThrows(EntityNotFoundException.class, () -> evaluationService.salvarOuAtualizarResposta(req));
     }
 
     @Test
     void saveOrUpdateAnswerShouldThrowWhenWrongCollaborator() {
         login(user(55, 1)); // instance owner is 99
         when(evaluationInstanceRepository.findById(100L)).thenReturn(Optional.of(evaluationInstance));
-        assertThrows(UnauthorizedActionException.class, () -> evaluationService.salvarOuAtualizarResposta(
-                new RespostaColaboradorRequestDTO(100L, 1L, "t", null)));
+        var req = new RespostaColaboradorRequestDTO(100L, 1L, "t", null);
+        assertThrows(UnauthorizedActionException.class, () -> evaluationService.salvarOuAtualizarResposta(req));
     }
 
     @Test
@@ -537,16 +539,16 @@ class AvaliacaoServiceTest {
     void saveManagerReviewShouldThrowWhenInstanceNotFound() {
         login(user(10, 1, "ROLE_GESTOR"));
         when(evaluationInstanceRepository.findById(999L)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> evaluationService.salvarRevisaoSupervisor(999L,
-                new RevisaoSupervisorRequestDTO(null, null, null)));
+        var req = new RevisaoSupervisorRequestDTO(null, null, null);
+        assertThrows(EntityNotFoundException.class, () -> evaluationService.salvarRevisaoSupervisor(999L, req));
     }
 
     @Test
     void saveManagerReviewShouldThrowWhenManagerCannotEvaluate() {
         login(user(10, 2, "ROLE_GESTOR")); // area=2; target is area=1
         when(evaluationInstanceRepository.findById(100L)).thenReturn(Optional.of(evaluationInstance));
-        assertThrows(UnauthorizedActionException.class, () -> evaluationService.salvarRevisaoSupervisor(100L,
-                new RevisaoSupervisorRequestDTO(null, null, null)));
+        var req = new RevisaoSupervisorRequestDTO(null, null, null);
+        assertThrows(UnauthorizedActionException.class, () -> evaluationService.salvarRevisaoSupervisor(100L, req));
     }
 
     // fetchForAnswer
