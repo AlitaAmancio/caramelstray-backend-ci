@@ -678,7 +678,7 @@ class AvaliacaoServiceTest {
 
     @Test
     void fetchReviewDataShouldReturnListWithoutSelectedOption() {
-        Pergunta q = question(1L); q.setPergunta("How do you rate?");
+        Pergunta q = question(1L); q.setDescricao("How do you rate?");
         RespostaColaborador answer = new RespostaColaborador();
         answer.setPergunta(q); answer.setRespostaTexto("Great"); answer.setPerguntaOpcaoSelecionada(null);
         when(evaluationInstanceRepository.existsById(100L)).thenReturn(true);
@@ -690,7 +690,7 @@ class AvaliacaoServiceTest {
 
     @Test
     void fetchReviewDataShouldReturnListWithSelectedOption() {
-        Pergunta q = question(1L); q.setPergunta("Rate 1-5");
+        Pergunta q = question(1L); q.setDescricao("Rate 1-5");
         PerguntaOpcao opt = new PerguntaOpcao(); opt.setCodigo(7L);
         RespostaColaborador answer = new RespostaColaborador();
         answer.setPergunta(q); answer.setPerguntaOpcaoSelecionada(opt);
