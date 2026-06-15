@@ -115,6 +115,14 @@
                             <formats>
                                 <format>XML</format>
                             </formats>
+                            <excludes>
+                                <exclude>br/com/AllTallent/dto/**</exclude>
+                                <exclude>br/com/AllTallent/model/**</exclude>
+                                <exclude>br/com/AllTallent/config/**</exclude>
+                                <exclude>br/com/AllTallent/exception/**</exclude>
+                                <exclude>br/com/AllTallent/CaramelStrayApplication*</exclude>
+                                <exclude>br/com/AllTallent/repository/**</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>

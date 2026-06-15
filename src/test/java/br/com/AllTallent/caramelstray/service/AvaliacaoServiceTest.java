@@ -283,6 +283,24 @@ class AvaliacaoServiceTest {
         assertThrows(UnauthorizedActionException.class, () -> evaluationService.criarAvaliacaoCompleta(request));
     }
 
+    @Test
+    void createEvaluationAdminGestorCanEvaluateCollaborator() {
+        CustomUserDetails adminGestor = user(10, 1, "ROLE_GESTOR", "ROLE_ADMIN");
+        login(adminGestor); stubCreateWithSave(adminGestor);
+        assertDoesNotThrow(() -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+    }
+
+    @Test
+    void createEvaluationAdminCannotEvaluateTargetInDifferentArea() {
+        CustomUserDetails admin = user(10, 2, "ROLE_ADMIN");
+        login(admin);
+        when(employeeRepository.getReferenceById(10)).thenReturn(employee(10, area));
+        when(questionRepository.findAllById(any())).thenReturn(List.of(question(1L)));
+        when(employeeRepository.findAllById(any())).thenReturn(List.of(targetEmployee));
+        assertThrows(UnauthorizedActionException.class,
+                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+    }
+
     // listAllEvaluations
     @Test
     void listAllEvaluationsAdminShouldReturnSameAreaEvaluations() {
@@ -345,6 +363,13 @@ class AvaliacaoServiceTest {
     }
 
     @Test
+    void listAllEvaluationsManagerShouldFilterEvaluationFromDifferentArea() {
+        login(user(10, 2, "ROLE_GESTOR"));
+        when(evaluationRepository.findAll()).thenReturn(List.of(evaluation)); // criador.area.codigo=1
+        assertTrue(evaluationService.listarTodasAvaliacoes().isEmpty());
+    }
+
+    @Test
     void listAllEvaluationsShouldReturnEmptyForUserWithoutRole() {
         login(user(10, 1));
         when(evaluationRepository.findAll()).thenReturn(List.of(evaluation));
@@ -399,6 +424,13 @@ class AvaliacaoServiceTest {
     @Test
     void validateAccessShouldPassWhenManagerIsCreator() {
         login(user(10, 1, "ROLE_GESTOR")); // creator=10
+        when(evaluationRepository.findById(1)).thenReturn(Optional.of(evaluation));
+        assertDoesNotThrow(() -> evaluationService.buscarAvaliacaoDetalhada(1));
+    }
+
+    @Test
+    void fetchDetailedEvaluationShouldAllowAdminGestorWhoIsNotCreator() {
+        login(user(99, 1, "ROLE_GESTOR", "ROLE_ADMIN")); // id=99 ≠ creator(10), same area
         when(evaluationRepository.findById(1)).thenReturn(Optional.of(evaluation));
         assertDoesNotThrow(() -> evaluationService.buscarAvaliacaoDetalhada(1));
     }

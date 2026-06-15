@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -44,7 +45,7 @@ class DashboardControllerTest {
         Funcionario f = new Funcionario();
         f.setCodigo(codigo);
         Perfil p = new Perfil();
-        p.setCodigo(1); // ROLE_ADMIN + ROLE_GESTOR + ROLE_USER
+        p.setCodigo(1);
         f.setPerfil(p);
         CustomUserDetails ud = new CustomUserDetails(f);
         return new UsernamePasswordAuthenticationToken(ud, null, ud.getAuthorities());
@@ -128,5 +129,63 @@ class DashboardControllerTest {
         mockMvc.perform(get("/api/dashboard")
                         .with(authentication(adminAuth(1))))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void getDashboardAsDirectoryShouldReturn200() throws Exception {
+        Funcionario f = new Funcionario();
+        f.setCodigo(1);
+        Perfil p = new Perfil();
+        p.setCodigo(1);
+        f.setPerfil(p);
+        CustomUserDetails ud = new CustomUserDetails(f);
+        Authentication directorAuth = new UsernamePasswordAuthenticationToken(ud, null,
+                List.of(new SimpleGrantedAuthority("ROLE_DIRETORIA"),
+                        new SimpleGrantedAuthority("ROLE_USER")));
+
+        when(dashboardService.getDashboardData(null)).thenReturn(emptyResponse());
+
+        mockMvc.perform(get("/api/dashboard")
+                        .with(authentication(directorAuth)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getDashboardAsSupervisorShouldForceAreaFilter() throws Exception {
+        Funcionario f = new Funcionario();
+        f.setCodigo(1);
+        Perfil p = new Perfil();
+        p.setCodigo(2);
+        f.setPerfil(p);
+        CustomUserDetails ud = new CustomUserDetails(f);
+        Authentication supervisorAuth = new UsernamePasswordAuthenticationToken(ud, null,
+                List.of(new SimpleGrantedAuthority("ROLE_SUPERVISAO"),
+                        new SimpleGrantedAuthority("ROLE_USER")));
+
+        Area area = new Area();
+        area.setCodigo(4);
+        Funcionario supervisor = new Funcionario();
+        supervisor.setCodigo(1);
+        supervisor.setArea(area);
+        when(funcionarioRepository.findById(1)).thenReturn(Optional.of(supervisor));
+        when(dashboardService.getDashboardData(4)).thenReturn(emptyResponse());
+
+        mockMvc.perform(get("/api/dashboard")
+                        .with(authentication(supervisorAuth)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getDashboardAsPlainUserShouldNotForceAreaFilter() throws Exception {
+        Funcionario f = new Funcionario();
+        f.setCodigo(1);
+        CustomUserDetails ud = new CustomUserDetails(f);
+        Authentication userAuth = new UsernamePasswordAuthenticationToken(ud, null, ud.getAuthorities());
+
+        when(dashboardService.getDashboardData(null)).thenReturn(emptyResponse());
+
+        mockMvc.perform(get("/api/dashboard")
+                        .with(authentication(userAuth)))
+                .andExpect(status().isOk());
     }
 }
