@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
 import br.com.AllTallent.dto.PerguntaRequestDTO;
 import br.com.AllTallent.dto.PerguntaResponseDTO;
 import br.com.AllTallent.dto.OpcaoRequest;
@@ -18,6 +20,7 @@ import br.com.AllTallent.repository.CompetenciaRepository;
 import br.com.AllTallent.repository.PerguntaRepository;
 import jakarta.persistence.EntityNotFoundException;
 
+@Slf4j
 @Service
 public class PerguntaService {
 
@@ -35,7 +38,7 @@ public class PerguntaService {
                 .orElseThrow(() -> new EntityNotFoundException("Competência não encontrada: " + dto.competenciaCodigo()));
 
         Pergunta novaPergunta = new Pergunta();
-        novaPergunta.setPergunta(dto.pergunta());
+        novaPergunta.setDescricao(dto.pergunta());
         novaPergunta.setCompetencia(competencia);
         novaPergunta.setTipoPergunta(dto.tipoPergunta()); 
 
@@ -44,7 +47,7 @@ public class PerguntaService {
         boolean isMultipla = tipo.contains("múltipla") || tipo.contains("multipla");
 
         if (isMultipla && dto.opcoes() != null && !dto.opcoes().isEmpty()) {
-            System.out.println(">>> Processando " + dto.opcoes().size() + " opções recebidas.");
+            log.info(">>> Processing {} options received.", dto.opcoes().size());
             
             Set<PerguntaOpcao> opcoesSet = new HashSet<>();
             
@@ -63,12 +66,12 @@ public class PerguntaService {
             }
             novaPergunta.setOpcoes(opcoesSet);
         } else {
-             System.out.println(">>> Não é múltipla escolha ou não há opções válidas. Tipo recebido: " + tipo);
+             log.info(">>> Não é múltipla escolha ou não há opções válidas. Tipo recebido: " + tipo);
         }
 
-        System.out.println(">>> Salvando Pergunta no repositório..."); 
+        log.info(">>> Salvando Pergunta no repositório..."); 
         Pergunta perguntaSalva = perguntaRepository.save(novaPergunta);
-        System.out.println(">>> Pergunta salva com código: " + perguntaSalva.getCodigo()); 
+        log.info(">>> Pergunta salva com código: " + perguntaSalva.getCodigo()); 
 
         return new PerguntaResponseDTO(perguntaSalva);
     }

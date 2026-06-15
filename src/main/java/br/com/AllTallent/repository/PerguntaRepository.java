@@ -12,5 +12,5 @@ public interface PerguntaRepository extends JpaRepository<Pergunta, Long> {
 
     List<Pergunta> findByCompetenciaCodigo(Integer competenciaCodigo);
 
-    boolean existsByPerguntaIgnoreCase(String textoPergunta);
+    boolean existsByDescricaoIgnoreCase(String textoPergunta);
 }

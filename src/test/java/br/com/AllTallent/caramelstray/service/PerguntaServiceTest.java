@@ -103,7 +103,7 @@ class PerguntaServiceTest {
     // listAll
     @Test
     void listAllShouldReturnMappedDTOs() {
-        Pergunta p = new Pergunta(); p.setCodigo(1L); p.setPergunta("What?");
+        Pergunta p = new Pergunta(); p.setCodigo(1L); p.setDescricao("What?");
         when(questionRepository.findAll()).thenReturn(List.of(p));
         assertEquals(1, questionService.listarTodas().size());
     }
@@ -111,7 +111,7 @@ class PerguntaServiceTest {
     // findById
     @Test
     void findByIdShouldReturnDTOWhenFound() {
-        Pergunta p = new Pergunta(); p.setCodigo(1L); p.setPergunta("What?");
+        Pergunta p = new Pergunta(); p.setCodigo(1L); p.setDescricao("What?");
         when(questionRepository.findById(1L)).thenReturn(Optional.of(p));
         assertNotNull(questionService.buscarPorId(1L));
     }

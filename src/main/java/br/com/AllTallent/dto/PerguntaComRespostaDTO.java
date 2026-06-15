@@ -19,7 +19,7 @@ public record PerguntaComRespostaDTO(
     public PerguntaComRespostaDTO(Pergunta pergunta, RespostaColaborador resposta) {
         this(
             pergunta.getCodigo(),
-            pergunta.getPergunta(),
+            pergunta.getDescricao(),
             pergunta.getTipoPergunta(),
             (pergunta.getOpcoes() != null) ?
                 pergunta.getOpcoes().stream().map(PerguntaOpcaoDTO::new).collect(Collectors.toList())
@@ -32,7 +32,7 @@ public record PerguntaComRespostaDTO(
      public PerguntaComRespostaDTO(Pergunta pergunta, List<RespostaColaborador> todasRespostas) {
          this(
              pergunta.getCodigo(),
-             pergunta.getPergunta(),
+             pergunta.getDescricao(),
              pergunta.getTipoPergunta(),
              (pergunta.getOpcoes() != null) ?
                  pergunta.getOpcoes().stream().map(PerguntaOpcaoDTO::new).collect(Collectors.toList())

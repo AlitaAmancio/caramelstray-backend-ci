@@ -1,5 +1,5 @@
 package br.com.AllTallent.dto;
 
-public class FuncionarioResumoUpdateDTO {
+public interface FuncionarioResumoUpdateDTO {
     
 }

@@ -30,7 +30,7 @@ public class Pergunta {
     private Long codigo; 
 
 
-    private String pergunta; 
+    private String descricao; 
 
     
     @ManyToOne(fetch = FetchType.LAZY) 

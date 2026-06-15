@@ -1,7 +1,5 @@
 package br.com.AllTallent.controller;
 
-import br.com.AllTallent.dto.PerfilDTO;
-import br.com.AllTallent.model.Perfil;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.AllTallent.dto.PerfilDTO;
 import br.com.AllTallent.model.Perfil;
 import br.com.AllTallent.repository.PerfilRepository;
 

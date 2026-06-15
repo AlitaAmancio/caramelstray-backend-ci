@@ -1,6 +1,7 @@
 package br.com.AllTallent.caramelstray.service;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,7 +58,7 @@ class AuthServiceTest {
         request.setLocalizacao("Sao Paulo, SP");
         request.setTituloProfissional("Software Engineer");
         request.setIdCracha("CR-9988");
-        request.setDataAdmissao(LocalDate.of(2026, 1, 15));
+        request.setDataAdmissao(LocalDate.of(2026, Month.JANUARY, 15));
         request.setCodigoGestor(10);
 
         area = new Area();

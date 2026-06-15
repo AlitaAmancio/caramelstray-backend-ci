@@ -16,7 +16,7 @@ public record PerguntaParaResponderDTO(
     public PerguntaParaResponderDTO(Pergunta entidade) {
         this(
             entidade.getCodigo(),
-            entidade.getPergunta(),
+            entidade.getDescricao(),
             entidade.getTipoPergunta(),
             (entidade.getCompetencia() != null) ? entidade.getCompetencia().getNome() : "Sem Categoria",
             

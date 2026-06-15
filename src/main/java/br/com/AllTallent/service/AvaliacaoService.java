@@ -381,7 +381,7 @@ public class AvaliacaoService {
 
             return RevisaoDetalhadaDTO.builder()
                 .perguntaId(resp.getPergunta().getCodigo())
-                .perguntaTexto(resp.getPergunta().getPergunta())
+                .perguntaTexto(resp.getPergunta().getDescricao())
                 .respostaDada(resp.getRespostaTexto())
                 .opcaoSelecionadaId(idOpcao) // Usa a variável que calculamos acima
                 .build();

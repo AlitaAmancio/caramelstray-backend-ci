@@ -12,7 +12,7 @@ public record PerguntaResponseDTO(
     public PerguntaResponseDTO(Pergunta entidade) {
         this(
             entidade.getCodigo(),
-            entidade.getPergunta(),
+            entidade.getDescricao(),
             entidade.getCompetencia() != null ? entidade.getCompetencia().getCodigo() : null,
             entidade.getCompetencia() != null ? entidade.getCompetencia().getNome() : null
         );
