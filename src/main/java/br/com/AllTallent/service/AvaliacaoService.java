@@ -306,7 +306,7 @@ public class AvaliacaoService {
     public AvaliacaoParaResponderDTO buscarParaResponder(Long instanciaId) {
         CustomUserDetails usuarioLogado = getUsuarioLogado();
          AvaliacaoFuncionario instancia = avaliacaoFuncionarioRepository.findById(instanciaId)
-            .orElseThrow(() -> new EntityNotFoundException("Instância de avaliação não encontrada: " + instanciaId));
+            .orElseThrow(() -> new EntityNotFoundException(MSG_AVALIACAO_NAO_ENCONTRADA_ID + instanciaId));
         if (!instancia.getFuncionario().getCodigo().equals(usuarioLogado.getCodigo())) {
             throw new UnauthorizedActionException("Permissão negada. Você só pode responder suas próprias avaliações.");
         }
@@ -323,7 +323,7 @@ public class AvaliacaoService {
     public void finalizarPeloColaborador(Long instanciaId) {
         CustomUserDetails usuarioLogado = getUsuarioLogado();
          AvaliacaoFuncionario instancia = avaliacaoFuncionarioRepository.findById(instanciaId)
-            .orElseThrow(() -> new EntityNotFoundException("Instância de avaliação não encontrada: " + instanciaId));
+            .orElseThrow(() -> new EntityNotFoundException(MSG_AVALIACAO_NAO_ENCONTRADA_ID + instanciaId));
         if (!instancia.getFuncionario().getCodigo().equals(usuarioLogado.getCodigo())) {
             throw new UnauthorizedActionException("Permissão negada. Você só pode finalizar suas próprias avaliações.");
         }
@@ -348,7 +348,7 @@ public class AvaliacaoService {
         // Validação de segurança já ocorre em salvarRevisaoSupervisor,
         // mas idealmente deveria ser adicionada aqui também.
          AvaliacaoFuncionario instancia = avaliacaoFuncionarioRepository.findById(instanciaId)
-            .orElseThrow(() -> new EntityNotFoundException("Instância de avaliação não encontrada: " + instanciaId));
+            .orElseThrow(() -> new EntityNotFoundException(MSG_AVALIACAO_NAO_ENCONTRADA_ID + instanciaId));
          Hibernate.initialize(instancia.getFuncionario());
          Avaliacao avaliacaoBase = instancia.getAvaliacao();
          Hibernate.initialize(avaliacaoBase);
