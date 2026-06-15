@@ -1,7 +1,18 @@
 package br.com.AllTallent.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -26,7 +37,6 @@ public class RespostaColaborador {
     @Column(name = "resposta_texto", columnDefinition = "TEXT")
     private String respostaTexto;
 
-    // AQUI ESTÁ O PULO DO GATO: O nome do atributo que vamos usar em todo lugar
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codigo_pergunta_opcao_selecionada")
     private PerguntaOpcao perguntaOpcaoSelecionada; 
