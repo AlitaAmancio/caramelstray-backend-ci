@@ -1,9 +1,9 @@
 package br.com.AllTallent.dto;
 
-//import br.com.AllTallent.model.Competencia;
-import br.com.AllTallent.model.Funcionario;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import br.com.AllTallent.model.Funcionario;
 
 public record FuncionarioCompetenciasResponseDTO(
     List<CompetenciaDTO> competencias

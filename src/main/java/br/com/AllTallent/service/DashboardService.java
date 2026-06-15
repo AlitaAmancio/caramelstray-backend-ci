@@ -1,17 +1,22 @@
 package br.com.AllTallent.service;
 
 // --- IMPORTAÇÕES ---
-import br.com.AllTallent.dto.DashboardResponseDTO;
-import br.com.AllTallent.dto.MesQuantidadeDTO;
-import br.com.AllTallent.dto.MesQuantidadeProjection; 
-import br.com.AllTallent.dto.AreaQuantidadeDTO;       
-import br.com.AllTallent.dto.CompetenciaQuantidadeDTO;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import br.com.AllTallent.dto.AreaQuantidadeDTO;
+import br.com.AllTallent.dto.CompetenciaQuantidadeDTO;
+import br.com.AllTallent.dto.DashboardResponseDTO;
+import br.com.AllTallent.dto.MesQuantidadeDTO;
+import br.com.AllTallent.dto.MesQuantidadeProjection;
 import br.com.AllTallent.model.Avaliacao;
 import br.com.AllTallent.model.AvaliacaoFuncionario;
 import br.com.AllTallent.model.Funcionario;
@@ -20,14 +25,6 @@ import br.com.AllTallent.repository.AvaliacaoFuncionarioRepository;
 import br.com.AllTallent.repository.AvaliacaoRepository;
 import br.com.AllTallent.repository.FuncionarioRepository;
 import br.com.AllTallent.repository.RespostaColaboradorRepository;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; 
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -87,7 +84,7 @@ public class DashboardService {
         // --- Conversão de Projeção para DTO ---
         List<MesQuantidadeDTO> evolucao = evolucaoProj.stream()
             .map(p -> new MesQuantidadeDTO(p.getMes(), p.getQuantidade()))
-            .collect(Collectors.toList());
+            .toList();
 
         // --- Cálculo da Meta ---
         Double metaMensal = 0.0;
