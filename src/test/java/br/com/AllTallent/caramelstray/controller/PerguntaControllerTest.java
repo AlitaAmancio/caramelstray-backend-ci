@@ -11,7 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -35,10 +34,10 @@ class PerguntaControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
 
-    @MockBean private PerguntaService perguntaService;
-    @MockBean private JwtService jwtService;
-    @MockBean private UserDetailsService userDetailsService;
-    @MockBean private FuncionarioRepository funcionarioRepository;
+    @MockitoBean private PerguntaService perguntaService;
+    @MockitoBean private JwtService jwtService;
+    @MockitoBean private UserDetailsService userDetailsService;
+    @MockitoBean private FuncionarioRepository funcionarioRepository;
 
     private PerguntaResponseDTO responseDTO() {
         return new PerguntaResponseDTO(1L, "What is Java?", 1, "Java");

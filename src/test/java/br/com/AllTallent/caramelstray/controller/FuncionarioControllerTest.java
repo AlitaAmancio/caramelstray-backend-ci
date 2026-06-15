@@ -8,7 +8,6 @@ import br.com.AllTallent.dto.CertificadoRequestDTO;
 import br.com.AllTallent.dto.ExperienciaDTO;
 import br.com.AllTallent.dto.ExperienciaRequestDTO;
 import br.com.AllTallent.dto.FuncionarioCompetenciaUpdateDTO;
-import br.com.AllTallent.dto.FuncionarioCompetenciasResponseDTO;
 import br.com.AllTallent.dto.FuncionarioExperienciasResponseDTO;
 import br.com.AllTallent.dto.FuncionarioPerfilDTO;
 import br.com.AllTallent.dto.FuncionarioRequestDTO;
@@ -16,14 +15,13 @@ import br.com.AllTallent.dto.FuncionarioResponseDTO;
 import br.com.AllTallent.exception.ResourceNotFoundException;
 import br.com.AllTallent.exception.UnauthorizedActionException;
 import br.com.AllTallent.model.Funcionario;
-import br.com.AllTallent.model.Perfil;
 import br.com.AllTallent.repository.FuncionarioRepository;
 import br.com.AllTallent.service.FuncionarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,6 +30,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -51,24 +50,14 @@ class FuncionarioControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
 
-    @MockBean private FuncionarioService funcionarioService;
-    @MockBean private JwtService jwtService;
-    @MockBean private UserDetailsService userDetailsService;
-    @MockBean private FuncionarioRepository funcionarioRepository;
+    @MockitoBean private FuncionarioService funcionarioService;
+    @MockitoBean private JwtService jwtService;
+    @MockitoBean private UserDetailsService userDetailsService;
+    @MockitoBean private FuncionarioRepository funcionarioRepository;
 
     private Authentication userAuth(int codigo) {
         Funcionario f = new Funcionario();
         f.setCodigo(codigo);
-        CustomUserDetails ud = new CustomUserDetails(f);
-        return new UsernamePasswordAuthenticationToken(ud, null, ud.getAuthorities());
-    }
-
-    private Authentication adminAuth(int codigo) {
-        Funcionario f = new Funcionario();
-        f.setCodigo(codigo);
-        Perfil p = new Perfil();
-        p.setCodigo(1);
-        f.setPerfil(p);
         CustomUserDetails ud = new CustomUserDetails(f);
         return new UsernamePasswordAuthenticationToken(ud, null, ud.getAuthorities());
     }
@@ -86,7 +75,7 @@ class FuncionarioControllerTest {
     }
 
     private ExperienciaRequestDTO experienceRequest() {
-        return new ExperienciaRequestDTO("Developer", "Tech Corp", LocalDate.of(2023, 1, 1), null, "Description");
+        return new ExperienciaRequestDTO("Developer", "Tech Corp", LocalDate.of(2023, Month.JANUARY, 1), null, "Description");
     }
 
     @Test
@@ -242,7 +231,7 @@ class FuncionarioControllerTest {
     void addExperienciaShouldReturn201() throws Exception {
         when(funcionarioService.adicionarExperiencia(eq(1), any()))
                 .thenReturn(new ExperienciaDTO(1, "Developer", "Tech Corp", "Desc",
-                        LocalDate.of(2023, 1, 1), null));
+                        LocalDate.of(2023, Month.JANUARY, 1), null));
 
         mockMvc.perform(post("/api/funcionario/1/experiencias")
                         .with(csrf())
@@ -256,7 +245,7 @@ class FuncionarioControllerTest {
     void updateExperienciaShouldReturn200() throws Exception {
         when(funcionarioService.atualizarExperiencia(eq(1), any()))
                 .thenReturn(new ExperienciaDTO(1, "Senior Developer", "Tech Corp", "Desc",
-                        LocalDate.of(2023, 1, 1), null));
+                        LocalDate.of(2023, Month.JANUARY, 1), null));
 
         mockMvc.perform(put("/api/funcionario/experiencias/1")
                         .with(csrf())

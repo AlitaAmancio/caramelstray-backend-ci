@@ -1,6 +1,7 @@
 package br.com.AllTallent.caramelstray.service;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -309,7 +310,7 @@ class FuncionarioServiceTest {
 
     // addExperience
     private ExperienciaRequestDTO expDto() {
-        return new ExperienciaRequestDTO("Dev", "Acme", LocalDate.of(2020, 1, 1), null, "Built things");
+        return new ExperienciaRequestDTO("Dev", "Acme", LocalDate.of(2020, Month.JANUARY, 1), null, "Built things");
     }
 
     @Test
@@ -420,8 +421,9 @@ class FuncionarioServiceTest {
     void linkSkillsShouldThrowWhenTargetNotFound() {
         login(user(99, 1, "ROLE_ADMIN"));
         when(employeeRepository.findByIdCompleto(10)).thenReturn(Optional.empty());
+        var skillIds = List.of(1);
         assertThrows(ResourceNotFoundException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 
     @Test
@@ -437,8 +439,9 @@ class FuncionarioServiceTest {
         login(user(10, 1)); // self-edit passes permission check
         stubTargetFound();
         when(skillRepository.findAllById(any())).thenReturn(List.of()); // 0 found, 2 expected
+        var skillIds = List.of(1, 2);
         assertThrows(ResourceNotFoundException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1, 2)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 
     @Test
@@ -446,8 +449,9 @@ class FuncionarioServiceTest {
         // anyMatch(ROLE_USER)=true && !anyMatch(ROLE_GESTOR)=true → return false
         login(user(99, 1, "ROLE_USER"));
         stubTargetFound();
+        var skillIds = List.of(1);
         assertThrows(UnauthorizedActionException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 
     @Test
@@ -456,8 +460,9 @@ class FuncionarioServiceTest {
         employee.setPerfil(null);
         login(user(99, 1, "ROLE_USER", "ROLE_GESTOR"));
         stubTargetFound();
+        var skillIds = List.of(1);
         assertThrows(UnauthorizedActionException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 
     @Test
@@ -465,8 +470,9 @@ class FuncionarioServiceTest {
         // target.profile != null, loggedUser.getAreaId() == null → return false
         login(user(99, null, "ROLE_GESTOR"));
         stubTargetFound();
+        var skillIds = List.of(1);
         assertThrows(UnauthorizedActionException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 
     @Test
@@ -474,8 +480,9 @@ class FuncionarioServiceTest {
         employee.setArea(null);
         login(user(99, 1, "ROLE_GESTOR"));
         stubTargetFound();
+        var skillIds = List.of(1);
         assertThrows(UnauthorizedActionException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 
     @Test
@@ -493,8 +500,9 @@ class FuncionarioServiceTest {
         profile.setCodigo(2);
         login(user(99, 1, "ROLE_GESTOR"));
         stubTargetFound();
+        var skillIds = List.of(1);
         assertThrows(UnauthorizedActionException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 
     @Test
@@ -502,8 +510,9 @@ class FuncionarioServiceTest {
         // sameArea=false (loggedUser.areaId=2, target.area.codigo=1) → return false
         login(user(99, 2, "ROLE_GESTOR"));
         stubTargetFound();
+        var skillIds = List.of(1);
         assertThrows(UnauthorizedActionException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 
     @Test
@@ -531,8 +540,9 @@ class FuncionarioServiceTest {
         profile.setCodigo(1);
         login(user(99, 1, "ROLE_ADMIN", "ROLE_GESTOR"));
         stubTargetFound();
+        var skillIds = List.of(1);
         assertThrows(UnauthorizedActionException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 
     @Test
@@ -540,8 +550,9 @@ class FuncionarioServiceTest {
         // sameArea=false in admin block → return false
         login(user(99, 2, "ROLE_ADMIN", "ROLE_GESTOR"));
         stubTargetFound();
+        var skillIds = List.of(1);
         assertThrows(UnauthorizedActionException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 
     @Test
@@ -549,7 +560,8 @@ class FuncionarioServiceTest {
         // falls through all role checks → return false at end of canAssociate
         login(user(99, 1));
         stubTargetFound();
+        var skillIds = List.of(1);
         assertThrows(UnauthorizedActionException.class,
-                () -> employeeService.associarCompetencias(10, List.of(1)));
+                () -> employeeService.associarCompetencias(10, skillIds));
     }
 }

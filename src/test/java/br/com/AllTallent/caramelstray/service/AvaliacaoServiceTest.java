@@ -297,8 +297,9 @@ class AvaliacaoServiceTest {
         when(employeeRepository.getReferenceById(10)).thenReturn(employee(10, area));
         when(questionRepository.findAllById(any())).thenReturn(List.of(question(1L)));
         when(employeeRepository.findAllById(any())).thenReturn(List.of(targetEmployee));
+        var req = dto(List.of(99), List.of(1L));
         assertThrows(UnauthorizedActionException.class,
-                () -> evaluationService.criarAvaliacaoCompleta(dto(List.of(99), List.of(1L))));
+                () -> evaluationService.criarAvaliacaoCompleta(req));
     }
 
     // listAllEvaluations

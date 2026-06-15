@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -27,8 +27,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -47,13 +45,13 @@ class AuthControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
 
-    @MockBean private AuthenticationManager authenticationManager;
-    @MockBean private AuthenticationProvider authenticationProvider;
-    @MockBean private FuncionarioRepository funcionarioRepository;
-    @MockBean private JwtService jwtService;
-    @MockBean private FuncionarioService funcionarioService;
-    @MockBean private AuthService authService;
-    @MockBean private UserDetailsService userDetailsService;
+    @MockitoBean private AuthenticationManager authenticationManager;
+    @MockitoBean private AuthenticationProvider authenticationProvider;
+    @MockitoBean private FuncionarioRepository funcionarioRepository;
+    @MockitoBean private JwtService jwtService;
+    @MockitoBean private FuncionarioService funcionarioService;
+    @MockitoBean private AuthService authService;
+    @MockitoBean private UserDetailsService userDetailsService;
 
     private Authentication buildAuth(int codigo) {
         Funcionario f = new Funcionario();

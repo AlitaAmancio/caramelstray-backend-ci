@@ -57,7 +57,7 @@ class AuthServiceTest {
         request.setLocalizacao("Sao Paulo, SP");
         request.setTituloProfissional("Software Engineer");
         request.setIdCracha("CR-9988");
-        request.setDataAdmissao(LocalDate.now());
+        request.setDataAdmissao(LocalDate.of(2026, 1, 15));
         request.setCodigoGestor(10);
 
         area = new Area();

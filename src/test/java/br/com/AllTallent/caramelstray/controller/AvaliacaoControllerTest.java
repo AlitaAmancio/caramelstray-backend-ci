@@ -21,7 +21,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,7 +30,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.Month;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -55,10 +55,10 @@ class AvaliacaoControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
 
-    @MockBean private AvaliacaoService avaliacaoService;
-    @MockBean private JwtService jwtService;
-    @MockBean private UserDetailsService userDetailsService;
-    @MockBean private FuncionarioRepository funcionarioRepository;
+    @MockitoBean private AvaliacaoService avaliacaoService;
+    @MockitoBean private JwtService jwtService;
+    @MockitoBean private UserDetailsService userDetailsService;
+    @MockitoBean private FuncionarioRepository funcionarioRepository;
 
     private Authentication userAuth(int codigo) {
         Funcionario f = new Funcionario();
@@ -73,7 +73,7 @@ class AvaliacaoControllerTest {
 
     private AvaliacaoRequestDTO avaliacaoRequest() {
         return new AvaliacaoRequestDTO("Test Evaluation",
-                LocalDate.now(ZoneId.of("UTC")).plusDays(30), List.of(1), List.of(1L));
+                LocalDate.of(2026, Month.JULY, 15), List.of(1), List.of(1L));
     }
 
     private RespostaColaboradorRequestDTO respostaRequest() {

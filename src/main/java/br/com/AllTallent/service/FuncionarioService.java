@@ -191,7 +191,7 @@ public class FuncionarioService {
         }
 
         if (logado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_USER")) &&
-            !logado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GESTOR"))) {
+            logado.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_GESTOR"))) {
             
             return false;
         }
@@ -208,7 +208,7 @@ public class FuncionarioService {
         int perfilAlvoId = alvo.getPerfil().getCodigo();
         
         if (logado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GESTOR")) &&
-            !logado.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            logado.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             boolean alvoEhColaborador = (perfilAlvoId == 3);
             return mesmoSetor && alvoEhColaborador;
         }
