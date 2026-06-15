@@ -32,6 +32,14 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.projectKey>AlitaAmancio_caramelstray-backend-ci</sonar.projectKey>
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.exclusions>
+            **/dto/**,
+            **/model/**,
+            **/config/**,
+            **/exception/**,
+            **/repository/**,
+            **/CaramelStrayApplication*
+        </sonar.coverage.exclusions>
     </properties>
     <dependencies>
         <dependency>
