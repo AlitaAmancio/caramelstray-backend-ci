@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["codigo", "funcionarioCodigo", "avaliacaoCodigo"],
+  "properties": {
+    "codigo":                 { "type": "integer" },
+    "funcionarioCodigo":      { "type": ["integer", "null"] },
+    "funcionarioNome":        { "type": ["string", "null"] },
+    "avaliacaoCodigo":        { "type": ["integer", "null"] },
+    "avaliacaoTitulo":        { "type": ["string", "null"] },
+    "comentarioColaborador":  { "type": ["string", "null"] },
+    "comentarioSupervisao":   { "type": ["string", "null"] },
+    "resultadoStatus":        { "type": ["string", "null"] },
+    "nota":                   { "type": ["integer", "null"] }
+  }
+}

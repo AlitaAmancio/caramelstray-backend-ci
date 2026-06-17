@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["codigo", "nomeCompleto", "email"],
+  "properties": {
+    "codigo":              { "type": "integer" },
+    "nomeCompleto":        { "type": "string" },
+    "email":               { "type": "string" },
+    "telefone":            { "type": ["string", "null"] },
+    "nomeArea":            { "type": ["string", "null"] },
+    "nomePerfil":          { "type": ["string", "null"] },
+    "nomeGestor":          { "type": ["string", "null"] },
+    "areaId":              { "type": ["integer", "null"] },
+    "perfilId":            { "type": ["integer", "null"] },
+    "gestorId":            { "type": ["integer", "null"] },
+    "tituloProfissional":  { "type": ["string", "null"] },
+    "localizacao":         { "type": ["string", "null"] },
+    "resumo":              { "type": ["string", "null"] },
+    "dataCadastro":        { "type": ["string", "null"] },
+    "certificados":        { "type": "array" },
+    "competencias":        { "type": "array" },
+    "experiencias":        { "type": "array" }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "nome"],
+    "properties": {
+      "id":       { "type": "integer" },
+      "nome":     { "type": "string" },
+      "categoria":{ "type": ["string", "null"] }
+    }
+  }
+}

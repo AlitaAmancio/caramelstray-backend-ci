@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["codigo", "titulo", "status"],
+  "properties": {
+    "codigo":       { "type": "integer" },
+    "titulo":       { "type": "string" },
+    "status":       { "type": "string" },
+    "dataCriacao":  { "type": ["string", "null"] },
+    "dataPrazo":    { "type": ["string", "null"] },
+    "nomeCriador":  { "type": ["string", "null"] }
+  }
+}

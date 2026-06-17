@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["codigo", "pergunta"],
+  "properties": {
+    "codigo":            { "type": "integer" },
+    "pergunta":          { "type": "string" },
+    "competenciaCodigo": { "type": ["integer", "null"] },
+    "competenciaNome":   { "type": ["string", "null"] }
+  }
+}

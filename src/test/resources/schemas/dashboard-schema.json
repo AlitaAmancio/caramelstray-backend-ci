@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "totalColaboradores":           { "type": ["integer", "null"] },
+    "avaliacoesConcluidasMes":      { "type": ["integer", "null"] },
+    "metaMensal":                   { "type": ["number", "null"] },
+    "totalPendencias":              { "type": ["integer", "null"] },
+    "evolucaoMensal":               { "type": ["array", "null"] },
+    "totalColaboradoresCompetencia":{ "type": ["array", "null"] },
+    "totalColaboradoresArea":       { "type": ["array", "null"] },
+    "top5CompetenciasMaisAvaliadas":{ "type": ["array", "null"] }
+  }
+}
