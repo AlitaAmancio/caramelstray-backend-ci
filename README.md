@@ -1,5 +1,15 @@
 # CaramelStray — Backend CI/CD & Quality Assurance
 
+## Documentation
+
+| Document | Contents |
+|---|---|
+| **This file** | Project overview, tech stack, architecture, how to run, sonar remediation history |
+| [README-PIPELINE.md](README-PIPELINE.md) | Complete CI/CD pipeline reference: the three stages, SonarCloud quality gate, suppressed rules and full justification, secrets management |
+| [README-TESTS.md](README-TESTS.md) | Complete test suite reference: unit tests by class, system tests by endpoint, JSON schemas, all engineering decisions |
+
+---
+
 ## Project Context
 
 This repository is a backend-only fork of the original [CaramelStray project](https://github.com/CaramelStray/CaramelStray-Api3-Semestre/tree/main/CaramelStray), developed as the practical assignment for the **Database Development Laboratory V** course.
