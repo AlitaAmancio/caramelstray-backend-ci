@@ -288,16 +288,18 @@ class FuncionarioServiceTest {
 
     // addCertificate
     @Test
-    void addCertificateShouldInitializeSetWhenCertificatesIsNull() {
+    void addCertificateShouldReturnDTOWhenEmployeeHasNullCertificates() {
         employee.setCertificados(null);
         when(employeeRepository.findById(10)).thenReturn(Optional.of(employee));
+        when(certificateRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         CertificadoDTO result = employeeService.adicionarCertificado(10, new CertificadoRequestDTO("AWS"));
         assertNotNull(result);
     }
 
     @Test
-    void addCertificateShouldAddToExistingSetWhenCertificatesIsNotNull() {
-        when(employeeRepository.findById(10)).thenReturn(Optional.of(employee)); // has empty HashSet from setUp
+    void addCertificateShouldReturnDTOWhenEmployeeHasExistingCertificates() {
+        when(employeeRepository.findById(10)).thenReturn(Optional.of(employee));
+        when(certificateRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         assertNotNull(employeeService.adicionarCertificado(10, new CertificadoRequestDTO("GCP")));
     }
 
@@ -314,15 +316,17 @@ class FuncionarioServiceTest {
     }
 
     @Test
-    void addExperienceShouldInitializeSetWhenExperiencesIsNull() {
+    void addExperienceShouldReturnDTOWhenEmployeeHasNullExperiences() {
         employee.setExperiencias(null);
         when(employeeRepository.findById(10)).thenReturn(Optional.of(employee));
+        when(experienceRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         assertNotNull(employeeService.adicionarExperiencia(10, expDto()));
     }
 
     @Test
-    void addExperienceShouldAddToExistingSetWhenExperiencesIsNotNull() {
+    void addExperienceShouldReturnDTOWhenEmployeeHasExistingExperiences() {
         when(employeeRepository.findById(10)).thenReturn(Optional.of(employee));
+        when(experienceRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         assertNotNull(employeeService.adicionarExperiencia(10, expDto()));
     }
 
