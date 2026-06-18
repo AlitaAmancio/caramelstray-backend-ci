@@ -33,8 +33,15 @@ class AuthSystemTest extends BaseSystemTest {
 
     @Test
     void registerShouldReturn201ForValidNewUser() {
-        register("New User E2E", "newuser@e2e.com", "NewUser@2024",
-                 "E2E-NEW-001", "444.444.444-44", baseAreaId, basePerfilColabId);
+        anonymous()
+            .body(String.format(
+                "{\"nomeCompleto\":\"New User E2E\",\"email\":\"newuser@e2e.com\"," +
+                "\"senha\":\"NewUser@2024\",\"idCracha\":\"E2E-NEW-001\"," +
+                "\"cpf\":\"444.444.444-44\",\"codigoArea\":%d,\"codigoPerfil\":%d}",
+                baseAreaId, basePerfilColabId))
+            .when().post(REGISTER_URL)
+            .then()
+            .statusCode(201);
     }
 
     @Test
