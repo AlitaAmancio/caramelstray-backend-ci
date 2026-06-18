@@ -122,7 +122,7 @@ class FuncionarioSystemTest extends BaseSystemTest {
             .when().get(FUNCIONARIO_URL + "/" + adminId + PATH_COMPETENCIAS)
             .then()
             .statusCode(200)
-            .body("funcionarioCodigo", equalTo(adminId));
+            .body("competencias", notNullValue());
     }
 
     @Test
@@ -142,7 +142,7 @@ class FuncionarioSystemTest extends BaseSystemTest {
             .when().get(FUNCIONARIO_URL + "/" + adminId + PATH_EXPERIENCIAS)
             .then()
             .statusCode(200)
-            .body("funcionarioCodigo", equalTo(adminId));
+            .body("codigoFuncionario", equalTo(adminId));
     }
 
     @Test

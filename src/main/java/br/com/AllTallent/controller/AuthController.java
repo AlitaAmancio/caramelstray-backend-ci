@@ -7,11 +7,13 @@ import br.com.AllTallent.dto.LoginResponseDTO;
 import br.com.AllTallent.model.Funcionario;
 import br.com.AllTallent.repository.FuncionarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import br.com.AllTallent.config.CustomUserDetails;
@@ -37,19 +39,23 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.email(),
-                        request.password()));
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.email(),
+                            request.password()));
 
-        var funcionario = funcionarioRepository.findByEmail(request.email())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado após autenticação"));
+            var funcionario = funcionarioRepository.findByEmail(request.email())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found after authentication"));
 
-        String jwtToken = jwtService.generateToken((UserDetails) authentication.getPrincipal());
+            String jwtToken = jwtService.generateToken((UserDetails) authentication.getPrincipal());
 
-        return ResponseEntity.ok(
-                new LoginResponseDTO(jwtToken, funcionario.getCodigo(), funcionario.getNomeCompleto()));
+            return ResponseEntity.ok(
+                    new LoginResponseDTO(jwtToken, funcionario.getCodigo(), funcionario.getNomeCompleto()));
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @PostMapping("/register")

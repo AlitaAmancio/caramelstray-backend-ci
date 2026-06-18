@@ -31,10 +31,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DashboardService {
     
-    private FuncionarioRepository funcionarioRepo;
-    private AvaliacaoRepository avaliacaoRepo;
-    private AvaliacaoFuncionarioRepository avaliacaoFuncionarioRepo;
-    private RespostaColaboradorRepository respostaColaboradorRepo;
+    private final FuncionarioRepository funcionarioRepo;
+    private final AvaliacaoRepository avaliacaoRepo;
+    private final AvaliacaoFuncionarioRepository avaliacaoFuncionarioRepo;
+    private final RespostaColaboradorRepository respostaColaboradorRepo;
 
     // --- MÉTODOS AUXILIARES NOVOS (Vieram do Git) ---
     public List<AreaQuantidadeDTO> getTotalColaboradoresArea() {
