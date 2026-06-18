@@ -39,7 +39,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -54,7 +54,7 @@ public class AuthController {
             return ResponseEntity.ok(
                     new LoginResponseDTO(jwtToken, funcionario.getCodigo(), funcionario.getNomeCompleto()));
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
