@@ -28,7 +28,7 @@ class CompetenciaSystemTest extends BaseSystemTest {
             .extract().path("id");
     }
 
-    // ─── Main Flows ───────────────────────────────────────────────────────────
+    // Main Flows
 
     @Test
     @Order(1)
@@ -79,7 +79,7 @@ class CompetenciaSystemTest extends BaseSystemTest {
             .body("id", equalTo(testCompetenciaId));
     }
 
-    // ─── Alternative Flows ────────────────────────────────────────────────────
+    // Alternative Flows
 
     @Test
     @Order(5)
@@ -91,7 +91,7 @@ class CompetenciaSystemTest extends BaseSystemTest {
             .statusCode(400);
     }
 
-    // ─── Exception Flows ──────────────────────────────────────────────────────
+    // Exception Flows
 
     @Test
     @Order(6)

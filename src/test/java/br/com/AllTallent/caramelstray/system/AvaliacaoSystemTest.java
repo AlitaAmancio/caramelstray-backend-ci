@@ -30,6 +30,7 @@ class AvaliacaoSystemTest extends BaseSystemTest {
     private Long instanciaId;
     private Long perguntaId;
 
+    // sets up a full evaluation chain: competencia, pergunta, avaliacao, and fetches the generated instance id
     @BeforeAll
     void createTestDependencies() {
         Integer competenciaId = asAdmin()
@@ -60,7 +61,7 @@ class AvaliacaoSystemTest extends BaseSystemTest {
             .extract().<Integer>path("[0]." + FIELD_CODIGO).longValue();
     }
 
-    // ─── Main Flows ───────────────────────────────────────────────────────────
+    // Main Flows
 
     @Test
     @Order(1)
@@ -170,7 +171,7 @@ class AvaliacaoSystemTest extends BaseSystemTest {
             .body("resultadoStatus", equalTo("APROVADO"));
     }
 
-    // ─── Alternative Flows ────────────────────────────────────────────────────
+    // Alternative Flows
 
     @Test
     @Order(11)
@@ -189,7 +190,7 @@ class AvaliacaoSystemTest extends BaseSystemTest {
         org.junit.jupiter.api.Assertions.assertNotNull(secondAvaliacaoId);
     }
 
-    // ─── Exception Flows ──────────────────────────────────────────────────────
+    // Exception Flows
 
     @Test
     @Order(12)

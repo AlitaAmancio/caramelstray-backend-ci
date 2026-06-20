@@ -11,7 +11,7 @@ class AreaSystemTest extends BaseSystemTest {
 
     private static final String AREA_URL = "/api/area";
 
-    // ─── Main Flows ───────────────────────────────────────────────────────────
+    // Main Flows
 
     @Test
     void createAreaShouldReturn201WithCreatedArea() {
@@ -38,7 +38,7 @@ class AreaSystemTest extends BaseSystemTest {
             .body("[0].nome", not(emptyOrNullString()));
     }
 
-    // ─── Alternative Flows ────────────────────────────────────────────────────
+    // Alternative Flows
 
     @Test
     void createAreaWithoutDescricaoShouldReturn201() {
@@ -59,7 +59,7 @@ class AreaSystemTest extends BaseSystemTest {
             .body("nome", hasItem("Technology"));
     }
 
-    // ─── Exception Flows ──────────────────────────────────────────────────────
+    // Exception Flows
 
     @Test
     void createAreaWithEmptyBodyShouldNotReturn500() {

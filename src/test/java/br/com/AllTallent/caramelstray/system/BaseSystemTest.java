@@ -74,10 +74,6 @@ public abstract class BaseSystemTest {
         );
     }
 
-    // Area and Perfil endpoints require authentication, but no token exists at setup time.
-    // Insert base data directly via JdbcTemplate so sequences reset to predictable IDs:
-    // perfilId 1=Diretoria (ADMIN), 2=Supervisao (GESTOR), 3=Colaborador (USER) —
-    // matching the hardcoded role mapping in CustomUserDetails.
     @SuppressWarnings("java:S2696")
     private void createBaseTestData() {
         baseAreaId = jdbcTemplate.queryForObject(

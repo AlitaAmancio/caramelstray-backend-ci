@@ -16,7 +16,7 @@ class AuthSystemTest extends BaseSystemTest {
     private static final String FIELD_NOME_COMPLETO = "nomeCompleto";
     private static final String FIELD_CODIGO      = "codigo";
 
-    // ─── Main Flows ───────────────────────────────────────────────────────────
+    // Main Flows
 
     @Test
     void loginShouldReturn200WithTokenAndUserInfo() {
@@ -56,7 +56,7 @@ class AuthSystemTest extends BaseSystemTest {
             .body("email", equalTo(ADMIN_EMAIL));
     }
 
-    // ─── Alternative Flows ────────────────────────────────────────────────────
+    // Alternative Flows
 
     @Test
     void getMeShouldReturn200WithGestorProfile() {
@@ -80,7 +80,7 @@ class AuthSystemTest extends BaseSystemTest {
             .statusCode(400);
     }
 
-    // ─── Exception Flows ──────────────────────────────────────────────────────
+    // Exception Flows
 
     @Test
     void loginShouldReturn401ForWrongPassword() {

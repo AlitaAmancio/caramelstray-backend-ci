@@ -51,7 +51,7 @@ class DashboardServiceTest {
         when(evaluationInstanceRepo.findTopCompetenciasMaisAvaliadas(any())).thenReturn(List.of());
     }
 
-    // getCollaboratorsByArea / getCollaboratorsBySkill / getTop5
+    // getCollaboratorsByArea
     @Test
     void getCollaboratorsByAreaShouldDelegateToRepository() {
         List<AreaQuantidadeDTO> expected = List.of(mock(AreaQuantidadeDTO.class));
@@ -136,14 +136,12 @@ class DashboardServiceTest {
         Funcionario alice = new Funcionario(); alice.setNomeCompleto("Alice");
         Funcionario bob = new Funcionario(); bob.setNomeCompleto("Bob");
 
-        // instAlice: PENDING + no answers → appears in both pending and missingDelivery
-        AvaliacaoFuncionario instAlice = mock(AvaliacaoFuncionario.class);
+        AvaliacaoFuncionario instAlice = mock(AvaliacaoFuncionario.class); // PENDING, no answers
         lenient().when(instAlice.getResultadoStatus()).thenReturn("PENDENTE");
         lenient().when(instAlice.getFuncionario()).thenReturn(alice);
         lenient().when(instAlice.getCodigo()).thenReturn(1L);
 
-        // instBob: COMPLETED + has answer → appears in neither list
-        AvaliacaoFuncionario instBob = mock(AvaliacaoFuncionario.class);
+        AvaliacaoFuncionario instBob = mock(AvaliacaoFuncionario.class);   // COMPLETED, has answer
         lenient().when(instBob.getResultadoStatus()).thenReturn("CONCLUIDO");
         lenient().when(instBob.getFuncionario()).thenReturn(bob);
         lenient().when(instBob.getCodigo()).thenReturn(2L);
@@ -183,7 +181,6 @@ class DashboardServiceTest {
     // getDistributionBySkill
     @Test
     void getDistributionBySkillShouldHandleNamedBlankAndNullSkillNames() {
-        // Competencia uses @EqualsAndHashCode(of = "codigo"), so each needs a distinct id.
         Competencia named = new Competencia(); named.setCodigo(1); named.setNome("Java");
         Competencia blank = new Competencia(); blank.setCodigo(2); blank.setNome("  ");
         Competencia nullName = new Competencia(); nullName.setCodigo(3); nullName.setNome(null);

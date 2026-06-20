@@ -11,7 +11,7 @@ class DashboardSystemTest extends BaseSystemTest {
 
     private static final String DASHBOARD_URL = "/api/dashboard";
 
-    // ─── Main Flows ───────────────────────────────────────────────────────────
+    // Main Flows
 
     @Test
     void getDashboardShouldReturn200ForAdmin() {
@@ -33,7 +33,7 @@ class DashboardSystemTest extends BaseSystemTest {
             .body("totalColaboradores", notNullValue());
     }
 
-    // ─── Alternative Flows ────────────────────────────────────────────────────
+    // Alternative Flows
 
     @Test
     void getDashboardWithAreaFilterShouldReturn200ForAdmin() {
@@ -53,7 +53,7 @@ class DashboardSystemTest extends BaseSystemTest {
             .body("totalColaboradores", notNullValue());
     }
 
-    // ─── Exception Flows ──────────────────────────────────────────────────────
+    // Exception Flows
 
     @Test
     void getDashboardShouldReturn403WithoutToken() {

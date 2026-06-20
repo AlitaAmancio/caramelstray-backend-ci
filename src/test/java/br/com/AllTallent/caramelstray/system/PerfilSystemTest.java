@@ -11,7 +11,7 @@ class PerfilSystemTest extends BaseSystemTest {
 
     private static final String PERFIL_URL = "/api/perfil";
 
-    // ─── Main Flows ───────────────────────────────────────────────────────────
+    // Main Flows
 
     @Test
     void createPerfilShouldReturn201WithCreatedPerfil() {
@@ -36,7 +36,7 @@ class PerfilSystemTest extends BaseSystemTest {
             .body("[0].nome", not(emptyOrNullString()));
     }
 
-    // ─── Alternative Flows ────────────────────────────────────────────────────
+    // Alternative Flows
 
     @Test
     void createPerfilWithoutDescricaoShouldReturn201() {
@@ -57,7 +57,7 @@ class PerfilSystemTest extends BaseSystemTest {
             .body("nome", hasItems("Diretoria", "Supervisao", "Colaborador"));
     }
 
-    // ─── Exception Flows ──────────────────────────────────────────────────────
+    // Exception Flows
 
     @Test
     void createPerfilWithNullNameShouldNotReturn500() {

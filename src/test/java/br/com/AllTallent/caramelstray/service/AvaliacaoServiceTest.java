@@ -163,7 +163,9 @@ class AvaliacaoServiceTest {
         assertThrows(UnauthorizedActionException.class, () -> evaluationService.listarTodasAvaliacoes());
     }
 
-    // createEvaluation + canEvaluate branches
+    // createEvaluation
+    // canEvaluate rule: gestor evaluates collaborators in same area; admin evaluates managers or
+    // collaborators in same area; self-evaluation and directors are never valid targets
     @Test
     void createEvaluationShouldSucceedManagerEvaluatingCollaborator() {
         CustomUserDetails manager = user(10, 1, "ROLE_GESTOR");
@@ -377,7 +379,7 @@ class AvaliacaoServiceTest {
         assertTrue(evaluationService.listarTodasAvaliacoes().isEmpty());
     }
 
-    // fetchDetailedEvaluation + validateAccess
+    // fetchDetailedEvaluation
     @Test
     void fetchDetailedEvaluationShouldReturnDTOForAdminInSameArea() {
         login(user(10, 1, "ROLE_ADMIN"));
@@ -431,12 +433,12 @@ class AvaliacaoServiceTest {
 
     @Test
     void fetchDetailedEvaluationShouldAllowAdminGestorWhoIsNotCreator() {
-        login(user(99, 1, "ROLE_GESTOR", "ROLE_ADMIN")); // id=99 ≠ creator(10), same area
+        login(user(99, 1, "ROLE_GESTOR", "ROLE_ADMIN")); // not the creator, same area: admin access
         when(evaluationRepository.findById(1)).thenReturn(Optional.of(evaluation));
         assertDoesNotThrow(() -> evaluationService.buscarAvaliacaoDetalhada(1));
     }
 
-    // fetchInstancesByEvaluation / fetchAnswersByInstance
+    // fetchInstancesByEvaluation
     @Test
     void fetchInstancesByEvaluationShouldReturnList() {
         login(user(10, 1, "ROLE_ADMIN"));
@@ -647,7 +649,7 @@ class AvaliacaoServiceTest {
         assertThrows(UnauthorizedActionException.class, () -> evaluationService.finalizarPeloColaborador(100L));
     }
 
-    // fetchPendingByEmployee / fetchForReview / fetchReviewData
+    // fetchPendingByEmployee
     @Test
     void fetchPendingByEmployeeShouldReturnOnlyPending() {
         AvaliacaoFuncionario approved = new AvaliacaoFuncionario();

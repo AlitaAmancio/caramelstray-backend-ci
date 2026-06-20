@@ -32,7 +32,7 @@ class PerguntaSystemTest extends BaseSystemTest {
             .extract().path("id");
     }
 
-    // ─── Main Flows ───────────────────────────────────────────────────────────
+    // Main Flows
 
     @Test
     @Order(1)
@@ -87,7 +87,7 @@ class PerguntaSystemTest extends BaseSystemTest {
             .body("competenciaCodigo", equalTo(competenciaId));
     }
 
-    // ─── Alternative Flows ────────────────────────────────────────────────────
+    // Alternative Flows
 
     @Test
     @Order(5)
@@ -99,7 +99,7 @@ class PerguntaSystemTest extends BaseSystemTest {
             .body(FIELD_PERGUNTA, hasItem(CONFLICT_QUESTION));
     }
 
-    // ─── Exception Flows ──────────────────────────────────────────────────────
+    // Exception Flows
 
     @Test
     @Order(6)

@@ -33,7 +33,7 @@ class FuncionarioSystemTest extends BaseSystemTest {
             .extract().path("id");
     }
 
-    // ─── Main Flows ───────────────────────────────────────────────────────────
+    // Main Flows
 
     @Test
     @Order(1)
@@ -181,7 +181,7 @@ class FuncionarioSystemTest extends BaseSystemTest {
             .body("size()", greaterThanOrEqualTo(1));
     }
 
-    // ─── Alternative Flows ────────────────────────────────────────────────────
+    // Alternative Flows
 
     @Test
     @Order(14)
@@ -206,7 +206,7 @@ class FuncionarioSystemTest extends BaseSystemTest {
             .statusCode(204);
     }
 
-    // ─── Exception Flows ──────────────────────────────────────────────────────
+    // Exception Flows
 
     @Test
     @Order(16)

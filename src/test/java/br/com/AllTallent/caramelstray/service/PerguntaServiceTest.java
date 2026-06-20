@@ -69,7 +69,7 @@ class PerguntaServiceTest {
         assertThrows(EntityNotFoundException.class, () -> questionService.criarPergunta(request));
     }
 
-    // null tipo, non-multipla tipo, multipla+null opcoes (accented), multipla+empty opcoes → all hit the else branch
+    // all 4 inputs skip the multipla escolha block and fall through to the else branch
     static Stream<Arguments> createQuestionElseBranchInputs() {
         return Stream.of(
                 Arguments.of(null, null),
@@ -88,8 +88,7 @@ class PerguntaServiceTest {
 
     @Test
     void createQuestionShouldProcessOptionsAndSkipNullAndBlankDescricao() {
-        // isMultipla=true, non-empty opcoes → enters if block
-        // covers all inner branches: null descricao (skip), blank descricao (skip), valid descricao (add)
+        // null, blank, and valid descricao — covers all 3 option branches
         List<OpcaoRequest> options = List.of(
                 new OpcaoRequest(null, false),
                 new OpcaoRequest("   ", false),

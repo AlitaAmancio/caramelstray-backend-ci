@@ -98,7 +98,6 @@ class FuncionarioServiceTest {
         securityContextHolderMock.when(SecurityContextHolder::getContext).thenReturn(securityContext);
     }
 
-    /** Returns a DTO where only areaId, perfilId, gestorId, and senhaHash are set. */
     private FuncionarioRequestDTO dto(Integer areaId, Integer perfilId, Integer gestorId, String password) {
         return new FuncionarioRequestDTO("Alice", "a@test.com", "123", "555",
                 password, areaId, perfilId, gestorId, "Engineer", "SP", "Bio");
@@ -162,7 +161,7 @@ class FuncionarioServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> employeeService.buscarPorId(99));
     }
 
-    // create + mapDtoToEntity branches
+    // create
     @Test
     void createShouldMapAllPresentFieldsAndEncodePassword() {
         Funcionario manager = new Funcionario(); manager.setCodigo(5);
@@ -248,7 +247,7 @@ class FuncionarioServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> employeeService.deletar(99));
     }
 
-    // findProfileById / findCompleteEmployee / listExperiencesByEmployee
+    // findProfileById
     @Test
     void findProfileByIdShouldReturnDTOWhenFound() {
         when(employeeRepository.findByIdCompleto(10)).thenReturn(Optional.of(employee));
@@ -353,7 +352,7 @@ class FuncionarioServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> employeeService.atualizarExperiencia(99, req));
     }
 
-    // canEditExperience / canRemoveCertificate
+    // permissions
     @Test
     void canEditExperienceShouldReturnTrueWhenOwner() {
         Experiencia exp = new Experiencia(); exp.setFuncionario(employee); // employee.codigo = 10
@@ -410,7 +409,9 @@ class FuncionarioServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> employeeService.removerCertificado(99));
     }
 
-    // linkSkills + canAssociate branches
+    // linkSkills
+    // canAssociate rule: self-edit always passes; gestor can link collaborators in same area;
+    // admin can link managers or collaborators in same area; directors cannot be linked by anyone
     private void stubTargetFound() {
         when(employeeRepository.findByIdCompleto(10)).thenReturn(Optional.of(employee));
     }
@@ -432,7 +433,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldSucceedWhenSelfEdit() {
-        login(user(10, 1)); // same id as employee → self-edit → canAssociate=true
+        login(user(10, 1)); // self-edit
         stubTargetFound(); stubSkillsFound(1);
         when(employeeRepository.save(any())).thenReturn(employee);
         assertDoesNotThrow(() -> employeeService.associarCompetencias(10, List.of(1)));
@@ -450,7 +451,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldThrowWhenPureRoleUser() {
-        // anyMatch(ROLE_USER)=true && !anyMatch(ROLE_GESTOR)=true → return false
+        // only ROLE_USER, no GESTOR
         login(user(99, 1, "ROLE_USER"));
         stubTargetFound();
         var skillIds = List.of(1);
@@ -460,7 +461,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldThrowWhenRoleUserAndGestorButTargetProfileIsNull() {
-        // anyMatch(ROLE_USER)=true && !anyMatch(ROLE_GESTOR)=false → skip; then profile==null → false
+        // ROLE_USER+ROLE_GESTOR but target profile is null
         employee.setPerfil(null);
         login(user(99, 1, "ROLE_USER", "ROLE_GESTOR"));
         stubTargetFound();
@@ -471,7 +472,6 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldThrowWhenLoggedAreaIdIsNull() {
-        // target.profile != null, loggedUser.getAreaId() == null → return false
         login(user(99, null, "ROLE_GESTOR"));
         stubTargetFound();
         var skillIds = List.of(1);
@@ -491,7 +491,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldSucceedWhenGestorEditsCollaboratorInSameArea() {
-        // profile=3, area=1, loggedUser.areaId=1 → sameArea=true, targetIsCollaborator=true
+        // same area, target is collaborator
         login(user(99, 1, "ROLE_GESTOR"));
         stubTargetFound(); stubSkillsFound(1);
         when(employeeRepository.save(any())).thenReturn(employee);
@@ -500,7 +500,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldThrowWhenGestorTargetsNonCollaborator() {
-        // profile=2, targetIsCollaborator=false → return false
+        // target is a manager, not a collaborator
         profile.setCodigo(2);
         login(user(99, 1, "ROLE_GESTOR"));
         stubTargetFound();
@@ -511,7 +511,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldThrowWhenGestorTargetsDifferentArea() {
-        // sameArea=false (loggedUser.areaId=2, target.area.codigo=1) → return false
+        // different area
         login(user(99, 2, "ROLE_GESTOR"));
         stubTargetFound();
         var skillIds = List.of(1);
@@ -521,7 +521,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldSucceedWhenAdminTargetsManagerSameArea() {
-        // targetProfileId=2 → targetIsTeam=true (covers OR branch: targetProfileId==2)
+        // target is manager (profile 2)
         profile.setCodigo(2);
         login(user(99, 1, "ROLE_ADMIN", "ROLE_GESTOR"));
         stubTargetFound(); stubSkillsFound(1);
@@ -531,7 +531,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldSucceedWhenAdminTargetsCollaboratorSameArea() {
-        // targetProfileId=3 → targetIsTeam=true (covers OR branch: targetProfileId!=2 && targetProfileId==3)
+        // target is collaborator (profile 3)
         login(user(99, 1, "ROLE_ADMIN", "ROLE_GESTOR"));
         stubTargetFound(); stubSkillsFound(1);
         when(employeeRepository.save(any())).thenReturn(employee);
@@ -540,7 +540,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldThrowWhenAdminTargetsDirector() {
-        // targetProfileId=1 → targetIsTeam=false (covers OR: targetProfileId!=2 && targetProfileId!=3)
+        // target is director (profile 1)
         profile.setCodigo(1);
         login(user(99, 1, "ROLE_ADMIN", "ROLE_GESTOR"));
         stubTargetFound();
@@ -551,7 +551,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldThrowWhenAdminIsInDifferentArea() {
-        // sameArea=false in admin block → return false
+        // different area
         login(user(99, 2, "ROLE_ADMIN", "ROLE_GESTOR"));
         stubTargetFound();
         var skillIds = List.of(1);
@@ -561,7 +561,7 @@ class FuncionarioServiceTest {
 
     @Test
     void linkSkillsShouldThrowWhenUserHasNoRole() {
-        // falls through all role checks → return false at end of canAssociate
+        // no role assigned
         login(user(99, 1));
         stubTargetFound();
         var skillIds = List.of(1);
