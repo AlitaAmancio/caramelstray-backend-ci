@@ -410,7 +410,6 @@ class FuncionarioServiceTest {
     }
 
     // linkSkills
-    // canAssociate rule: self-edit always passes; gestor can link collaborators in same area;
     // admin can link managers or collaborators in same area; directors cannot be linked by anyone
     private void stubTargetFound() {
         when(employeeRepository.findByIdCompleto(10)).thenReturn(Optional.of(employee));
